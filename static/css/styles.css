@@ -1,0 +1,54 @@
+.grid line {
+    stroke: lightgrey;
+    stroke-opacity: 0.7;
+    shape-rendering: crispEdges;
+  }
+  
+  .grid path {
+    stroke-width: 0;
+  }
+
+  .axis path {
+    stroke: lightgrey;
+  }
+
+  .axis line {
+    stroke: white;
+  }
+
+  .axis text {
+    fill: rgb(101, 101, 101);
+  }
+
+  .line {
+    stroke: rgb(101, 101, 101);
+    stroke-width: 2px;
+  }
+  
+  .point {
+    fill: rgb(101, 101, 101);
+  }
+
+  #center-message {
+    margin-top: 130px;
+  }
+
+  #footer-divider {
+    margin-top: 50px;
+  }
+
+  svg {
+    display: block;
+    margin: auto;
+  }
+
+  .emblem {
+    margin-top: 30px;
+    margin-bottom: 10px;
+  }
+  
+  #footer-word {
+    text-align: center;
+    margin-bottom: 60px;
+    color: rgb(91, 91, 91);
+  }
