@@ -9,10 +9,18 @@ def index(request):
 
 def forecast(request, station_id):
     
+    import pytz
+    import datetime
+    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    name=current.strftime('%Y%m%d%H')
+    n = range(1, 7)
+    tsList = [current - datetime.timedelta(hours = d) for d in n]
+    queryTime = [(str(ts.year) + '{0:02d}'.format(ts.month) + '{0:02d}'.format(ts.day), '{0:02d}'.format(ts.hour)) for ts in tsList]
+    timestrings = str(queryTime).replace("[", "").replace("]", "")
+
     import mysql.connector
     cnx = mysql.connector.connect(user='root',password='360chenghua', host='127.0.0.1',database='pm25_readings')
     cursor = cnx.cursor()
-    timestrings = "('20171030', '07'),('20171030', '08'),('20171030', '09'),('20171030', '10'),('20171030', '11'),('20171030', '12e')"
     query = "select ID, DATE, HOUR, READING from readings where ID = %s and (DATE, HOUR) IN (" + timestrings + ")"
     cursor.execute(query,(station_id,))
 
