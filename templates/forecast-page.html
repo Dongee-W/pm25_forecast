@@ -47,11 +47,11 @@
             <svg>
                 <defs>
                     <filter id="f1" x="-1" y="-1" width="300%" height="300%">
-                    <feOffset result="offOut" in="SourceGraphic" dx="0" dy="1" />
-                    <feColorMatrix result="matrixOut" in="offOut" type="matrix"
-                    values="0.7 0 0 0 0 0 0.7 0 0 0 0 0 0.7 0 0 0 0 0 1 0" />
-                    <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="1" />
-                    <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+                        <feOffset result="offOut" in="SourceGraphic" dx="0" dy="1" />
+                        <feColorMatrix result="matrixOut" in="offOut" type="matrix"
+                        values="0.7 0 0 0 0 0 0.7 0 0 0 0 0 0.7 0 0 0 0 0 1 0" />
+                        <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="1" />
+                        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
                     </filter>
                 </defs>
             </svg>
@@ -61,12 +61,12 @@
         </div>
         <script type="text/javascript">
 
-            var parseTime = d3.timeParse("%Y-%m-%d %H:%M");
+            var parseTime = d3.timeParse("%Y%m%d%H");
 
             var rowConverter = function(d) {
                 return {
-                    timestamp: parseTime(d.timestamp),
-                    readings: parseFloat(d.readings)
+                    timestamp: parseTime(d.TIMESTAMP),
+                    readings: Math.floor(parseFloat(d.READING))
                 }
             }
 
@@ -108,7 +108,7 @@
 
             
             
-            d3.csv("{% static "test-data5.csv" %}", rowConverter, function(dataset) {
+            d3.csv("{% static filename %}", rowConverter, function(dataset) {
                 
                 var readings_maximum = d3.max(dataset, function(d) {
                     return d.readings;
