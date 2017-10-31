@@ -45,9 +45,7 @@ def forecast(request, station_id):
     query_predicion = "select ID, DATE, HOUR, TARGET_HOUR, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s and MODEL = 0 ORDER BY TARGET_HOUR"
     cursor.execute(query_predicion, (station_id, dateString, hourString))
     for (id, date, hour, target_hour, prediction) in cursor:
-        targetTime = 
-            datetime.datetime.strptime(date + hour, '%Y%m%d%H') + 
-            datetime.timedelta(hours = target_hour)
+        targetTime = datetime.datetime.strptime(date + hour, '%Y%m%d%H') + datetime.timedelta(hours = target_hour)
         targetDate = str(targetTime.year) + '{0:02d}'.format(targetTime.month) + '{0:02d}'.format(targetTime.day)
         targetHour = '{0:02d}'.format(targetTime.hour)
 
