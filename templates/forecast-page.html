@@ -66,7 +66,7 @@
             var rowConverter = function(d) {
                 return {
                     timestamp: parseTime(d.TIMESTAMP),
-                    readings: Math.floor(parseFloat(d.READING))
+                    readings: Math.round(parseFloat(d.READING))
                 }
             }
 
@@ -91,7 +91,7 @@
             }
 
             var textSize = function(readings) {
-                var numberOfDigit = Math.floor(readings).toString().length
+                var numberOfDigit = Math.round(readings).toString().length
                 if (numberOfDigit == 1) return "65px"
                 else if (numberOfDigit == 2) return "50px"
                 else if (numberOfDigit == 3) return "40px"
