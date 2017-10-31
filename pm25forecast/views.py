@@ -26,9 +26,11 @@ def forecast(request, station_id):
     hourString = '{0:02d}'.format(current.hour)
 
     # parameters for testing
+    '''
     dateString = '20171031'
     hourString = '10'
     station_id = 'FT_LIVE8CE7A9EC_G5N'
+    '''
     # parameters end ...
 
     import mysql.connector
