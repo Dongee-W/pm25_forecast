@@ -74,7 +74,7 @@
             var h = 630;
             var left_paddings = 40;
             var right_paddings = 40;
-            var bottom_paddings = 20;
+            var bottom_paddings = 40;
             var top_height = 400;
             var chart_margin = 40;
             var meter_radius = 75;
@@ -318,7 +318,7 @@
                     //.attr("stroke", "gray");
 
                 /* Axis */
-                var xAxis = d3.axisBottom(time_scale).tickSize(0).tickPadding(10);
+                var xAxis = d3.axisBottom(time_scale).tickSize(0).tickPadding(20);
                 d3.select("svg")
                     .append("g")
                     .attr("class", "axis")
