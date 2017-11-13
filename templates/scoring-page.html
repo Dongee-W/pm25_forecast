@@ -1,3 +1,4 @@
+{% load static %}
 <!doctype html>
 
 <html lang="en">
@@ -43,7 +44,7 @@
         </div>
         <div class="ui container">
             <h2 class="ui center aligned icon header" id="center-message">
-                <i class="bar chart icon"></i>
+                <i class="thermometer three quarters icon"></i>
                 <div class="content">
                         PM 2.5 Forecast verification for
                     <div class="sub header">AirBox (28C2DDDD47A8) - AirBox-LAS</div>
@@ -125,7 +126,7 @@
             <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
             
             <div class="ui divider" id="footer-divider"></div>
-            <img class="ui centered image tiny emblem" src="academia-sinica-desaturated.png" alt="Academia_Sinica_Emblem">
+            <img class="ui centered image tiny emblem" src="{% static "academia-sinica-desaturated.png" %}" alt="Academia_Sinica_Emblem">
             <div id="footer-word">Powered by d3js, semantic ui</div>
         </div>
         <script type="text/javascript">
