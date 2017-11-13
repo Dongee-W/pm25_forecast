@@ -15,16 +15,14 @@ def forecast_test(request):
 
 
 def forecast(request, station_id):
-    
     import pytz
     import datetime
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
     name=current.strftime('%Y%m%d%H')
 
-
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
-
+    
     # parameters for testing
     '''
     dateString = '20171031'
@@ -50,10 +48,8 @@ def forecast(request, station_id):
         targetTime = datetime.datetime.strptime(date + hour, '%Y%m%d%H') + datetime.timedelta(hours = target_hour)
         targetDate = str(targetTime.year) + '{0:02d}'.format(targetTime.month) + '{0:02d}'.format(targetTime.day)
         targetHour = '{0:02d}'.format(targetTime.hour)
-
         record = {"ID": id, "DATE": targetDate, "HOUR": targetHour, "READING": prediction}
         data.append(record)
-
 
     cursor.close()
     cnx.close()
@@ -65,6 +61,7 @@ def forecast(request, station_id):
     final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
     
     context = {'station_id': station_id, 'filename': (station_id + ".csv")}
+
     return render(request, 'forecast-page.html', context)
 
 def experiment(request):
@@ -98,4 +95,4 @@ def experiment(request):
     final = queryResult.drop(["DATE", "HOUR"], axis=1)
     final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
     '''
-    return HttpResponse("This is meant to be an experiment.")
+    return render(request, 'scoring-page.html')

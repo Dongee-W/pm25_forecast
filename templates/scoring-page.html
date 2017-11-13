@@ -1,0 +1,270 @@
+<!doctype html>
+
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    <title>D3 js playground</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
+
+    <link rel="stylesheet" href="{% static "css/styles2.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.css">
+    
+    
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.2/d3.js"></script>-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+    <script
+    src="https://code.jquery.com/jquery-3.2.1.min.js"
+    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+    crossorigin="anonymous"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    
+    
+
+    <!--[if lt IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+    </head>
+
+    <body>
+        <div class="ui top fixed menu">
+            <div class="item">
+                <img src="/images/logo.png">
+            </div>
+            <a class="item">Features</a>
+            <a class="item">Testimonials</a>
+            <a class="item">Sign-in</a>
+        </div>
+        <div class="ui container">
+            <h2 class="ui center aligned icon header" id="center-message">
+                <i class="bar chart icon"></i>
+                <div class="content">
+                        PM 2.5 Forecast verification for
+                    <div class="sub header">AirBox (28C2DDDD47A8) - AirBox-LAS</div>
+                </div>
+            </h2>
+            <div class="ui five cards" id="numbers">
+                <div class="card">
+                    <div class="content centered card-text">
+                        <div class="ui statistic">
+                            <div class="label">
+                            One-hour error
+                            </div>
+                            <div class="value">
+                            5%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="content centered card-text">
+                        <div class="ui statistic">
+                            <div class="label">
+                            Two-hour error
+                            </div>
+                            <div class="value">
+                                13%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="content centered card-text">
+                        <div class="ui statistic">
+                            <div class="label">
+                                Three-hour error
+                            </div>
+                            <div class="value">
+                                15%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="content centered card-text">
+                        <div class="ui statistic">
+                            <div class="label">
+                                Four-hour error
+                            </div>
+                            <div class="value">
+                                50%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="content centered card-text">
+                        <div class="ui statistic">
+                            <div class="label">
+                                Five-hour error
+                            </div>
+                            <div class="value">
+                                67%
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ui equal width grid">
+                <div class="equal width row">
+                    <div class="column" id="one-hour"></div>
+                    <div class="column" id="two-hour"></div>
+                    <div class="column" id="three-hour"></div>
+                    <div class="column" id="four-hour"></div>
+                    <div class="column" id="five-hour"></div>
+                </div>
+              </div>
+
+            <div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+            
+            <div class="ui divider" id="footer-divider"></div>
+            <img class="ui centered image tiny emblem" src="academia-sinica-desaturated.png" alt="Academia_Sinica_Emblem">
+            <div id="footer-word">Powered by d3js, semantic ui</div>
+        </div>
+        <script type="text/javascript">
+            Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+
+        function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+        }
+
+        
+        var trace1 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'Sachit model',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.High'),
+            line: {color: 'rgb(255, 214, 51)'}
+        }
+
+        var trace2 = {
+            type: "scatter",
+            mode: "lines",
+            name: 'Yang model',
+            x: unpack(rows, 'Date'),
+            y: unpack(rows, 'AAPL.Low'),
+            line: {color: 'rgb(51, 153, 102)'}
+        }
+
+        var data = [trace1,trace2];
+            
+        var layout = {
+            title: 'Relative Error', 
+        };
+
+        Plotly.newPlot('myDiv', data, layout);
+
+        var trace1 = {
+            x: [1, 2, 3, 4],
+            y: [10, 15, 13, 17],
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var trace2 = {
+            x: [1, 2, 3, 4],
+            y: [16, 5, 11, 9],
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var CDFdata = [trace1, trace2];
+        var CDFlayout1 = {
+            title: 'One-hour CDF',
+            autosize: true,
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.1
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+        };
+        var CDFlayout2 = {
+            title: 'Two-hour CDF',
+            autosize: true,
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.1
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+        };
+        var CDFlayout3 = {
+            title: 'Three-hour CDF',
+            autosize: true,
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.1
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+        };
+        var CDFlayout4 = {
+            title: 'Four-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.1
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+        };
+        var CDFlayout5 = {
+            title: 'Five-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.1
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+        };
+        Plotly.newPlot('one-hour', CDFdata, CDFlayout1,{displayModeBar: false});
+        Plotly.newPlot('two-hour', CDFdata, CDFlayout2, {displayModeBar: false});
+        Plotly.newPlot('three-hour', CDFdata, CDFlayout3, {displayModeBar: false});
+        Plotly.newPlot('four-hour', CDFdata, CDFlayout4, {displayModeBar: false});
+        Plotly.newPlot('five-hour', CDFdata, CDFlayout5, {displayModeBar: false});
+        })
+
+        
+
+        
+        </script>
+    </body>
+</html>

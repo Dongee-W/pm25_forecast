@@ -1,0 +1,35 @@
+.card-text {
+    text-align: center;
+}
+
+#center-message {
+    margin-top: 130px;
+    margin-bottom: 110px;
+}
+
+
+#myDiv {
+    margin-top: 0px;
+  }
+
+line {
+    fill: rgb(256,256,256);
+}
+#numbers {
+    margin-bottom: 20px;
+}
+
+.emblem {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+#footer-word {
+    text-align: center;
+    margin-bottom: 60px;
+    color: rgb(91, 91, 91);
+}
+
+#chart {
+    margin-top: 130px;
+  }
