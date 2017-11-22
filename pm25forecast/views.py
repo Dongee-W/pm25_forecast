@@ -13,7 +13,6 @@ def forecast_test(request):
     context = {'station_id': "WF_3977799", 'filename': "1421GE.csv"}
     return render(request, 'forecast-page.html', context)
 
-
 def forecast(request, station_id):
     import pytz
     import datetime
@@ -32,7 +31,7 @@ def forecast(request, station_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='360chenghua', host='127.0.0.1', database='pm25_readings')
+    cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
     query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
     cursor.execute(query, (station_id, dateString, hourString))

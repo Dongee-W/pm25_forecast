@@ -20,7 +20,7 @@ from . import views
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
-    url(r'^forecast/$', views.forecast_test, name='forecast_test'),
+    url(r'^forecast-test/$', views.forecast_test, name='forecast_test'),
     url(r'^forecast/(?P<station_id>[a-zA-Z0-9\.\-\_]+)', views.forecast, name='forecast'),
     url(r'^experiment/', views.experiment, name='experiment'),
 ]
