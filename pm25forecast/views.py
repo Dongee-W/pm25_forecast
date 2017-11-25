@@ -9,6 +9,12 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
+def overview_test(request):
+    return HttpResponse("Overview Test")
+
+def overview(request):
+    return HttpResponse("Overview page")
+
 def forecast_test(request):
     context = {'station_id': "WF_3977799", 'filename': "1421GE.csv"}
     return render(request, 'forecast-page.html', context)
@@ -41,7 +47,7 @@ def forecast(request, station_id):
         record = {"ID": id, "DATE": date, "HOUR": hour, "READING": reading}
         data.append(record)
 
-    query_predicion = "select ID, DATE, HOUR, TARGET_HOUR, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s and MODEL = 0 ORDER BY TARGET_HOUR"
+    query_predicion = "select ID, DATE, HOUR, HOUR_AHEAD, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s and MODEL = 0 ORDER BY TARGET_HOUR"
     cursor.execute(query_predicion, (station_id, dateString, hourString))
     for (id, date, hour, target_hour, prediction) in cursor:
         targetTime = datetime.datetime.strptime(date + hour, '%Y%m%d%H') + datetime.timedelta(hours = target_hour)
