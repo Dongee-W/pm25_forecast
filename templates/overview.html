@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Forecast overview{% endblock %}
+
+{% block local_import %}
+<link rel="stylesheet" href="{% static "css/overview.css" %}">
+{% endblock %}
+
+{% block content %}
+<h2 class="ui center aligned icon header" id="center-message">
+    <i class="calculator icon"></i>
+    <div class="content">
+            PM 2.5 Forecast and Error
+        <div class="sub header">Overview</div>
+    </div>
+</h2>
+<table class="ui celled table" id="table">
+    <thead>
+        <tr><th>Site</th>
+        <th>Site ID</th>
+        <th>5 hours</th>
+        <th>4 hours</th>
+        <th>3 hours</th>
+        <th>2 hours</th>
+        <th>1 hours</th>
+        <th>
+            <div class="ui label red">
+            Now
+            </div></th>
+        <th>1 hours later</th>
+        <th>2 hours later</th>
+        <th>3 hours later</th>
+        <th>4 hours later</th>
+        <th>5 hours later</th>
+    </tr></thead>
+    <tbody>
+      
+    </tbody>
+</table>
+<script type="text/javascript">
+    var rowConverter = function(d) {
+        return {
+            id: d["ID"],
+            left5: parseFloat(d["5left"]),
+            left4: parseFloat(d["4left"]),
+            left3: parseFloat(d["3left"]),
+            left2: parseFloat(d["2left"]),
+            left1: parseFloat(d["1left"]),
+            readings: parseFloat(d["READING"]),
+            right1: parseFloat(d["1right"]),
+            right2: parseFloat(d["2right"]),
+            right3: parseFloat(d["3right"]),
+            right4: parseFloat(d["4right"]),
+            right5: parseFloat(d["5right"])
+        }
+    }
+
+    d3.csv("{% static filename %}", rowConverter, function(dataset) {
+        d3.select("tbody")
+            .selectAll("tr")
+            .data(dataset)
+            .enter()
+            .append("tr")
+            .html(function(d, i) {
+                return `<td>${i}</td><td>${d.id}</td><td>${Math.floor(d.left5).toString()}</td>
+                <td>${Math.floor(d.left4).toString()}</td><td>${Math.floor(d.left3).toString()}</td>
+                <td>${Math.floor(d.left2).toString()}</td><td>${Math.floor(d.left1).toString()}</td>
+                <td>${Math.floor(d.readings).toString()}</td><td>${Math.floor(d.right1).toString()}</td>
+                <td>${Math.floor(d.right2).toString()}</td><td>${Math.floor(d.right3).toString()}</td>
+                <td>${Math.floor(d.right4).toString()}</td><td>${Math.floor(d.right5).toString()}</td>`
+            });
+    })
+
+
+</script>
+{% endblock %}
+

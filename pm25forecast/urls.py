@@ -24,5 +24,6 @@ urlpatterns = [
     url(r'^overview/$', views.overview, name='overview'),
     url(r'^forecast-test/$', views.forecast_test, name='forecast_test'),
     url(r'^forecast/(?P<station_id>[a-zA-Z0-9\.\-\_]+)', views.forecast, name='forecast'),
-    url(r'^experiment/', views.experiment, name='experiment'),
+    url(r'^performance-test/', views.performance_test, name='performance_test'),
+    url(r'^performance/', views.performance, name='performance'),
 ]
