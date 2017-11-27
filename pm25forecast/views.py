@@ -48,7 +48,7 @@ def overview(request):
         record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
         rightHalfData.append(record)
 
-    queryNow = "select ID, DATE, HOUR, READING from readings where DATE = %s and HOUR = %s"
+    queryNow = "select ID, READING from readings where DATE = %s and HOUR = %s"
     cursor.execute(queryNow, (dateString, hourString))
 
     dataNow = []
