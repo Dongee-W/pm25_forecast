@@ -68,7 +68,7 @@ def overview(request):
         rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
 
         fullTable = pd.merge(leftHalfTable, rightHalfTable, how='outer', left_index=True, right_index=True)
-        perfectTable = pd.merget(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
+        perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + ".csv"), index=False)
     else:
