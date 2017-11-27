@@ -69,6 +69,7 @@ def overview(request):
 
         fullTable = pd.merge(leftHalfTable, rightHalfTable, how='outer', left_index=True, right_index=True)
         perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
+        perfectTable['ID'] = perfectTable.index
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + ".csv"), index=False)
     else:
