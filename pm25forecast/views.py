@@ -23,10 +23,10 @@ def overview(request):
     hourString = '{0:02d}'.format(current.hour)
     
     # parameters for testing
-    
+    '''
     dateString = '20171127'
     hourString = '13'
-    
+    '''
     # parameters end ...
 
     import mysql.connector
