@@ -140,34 +140,8 @@ def performance_test(request):
 
 
 def performance(request):
-    '''
-    import pytz
-    import datetime
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
-    name=current.strftime('%Y%m%d%H')
-    n = range(1, 7)
-    tsList = [current - datetime.timedelta(hours = d) for d in n]
-    queryTime = [(str(ts.year) + '{0:02d}'.format(ts.month) + '{0:02d}'.format(ts.day), '{0:02d}'.format(ts.hour)) for ts in tsList]
-    timestrings = str(queryTime).replace("[", "").replace("]", "")
-
     import mysql.connector
-    cnx = mysql.connector.connect(user='root',password='360chenghua', host='127.0.0.1',database='pm25_readings')
+    cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
-    query = "select ID, DATE, HOUR, READING from readings where ID = %s and (DATE, HOUR) IN (" + timestrings + ")"
-    cursor.execute(query,(station_id,))
-
-    data = []
-    for (id, date, hour, reading) in cursor:
-        record = {"ID": id, "DATE": date, "HOUR": hour, "READING": reading}
-        data.append(record)
-
-    cursor.close()
-    cnx.close()
-
-    import pandas as pd
-    queryResult = pd.DataFrame(data)
-    queryResult['TIMESTAMP'] = queryResult['DATE'] + queryResult['HOUR']
-    final = queryResult.drop(["DATE", "HOUR"], axis=1)
-    final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
-    '''
+    
     return render(request, 'performance.html')

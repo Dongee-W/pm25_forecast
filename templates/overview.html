@@ -63,12 +63,12 @@
             .enter()
             .append("tr")
             .html(function(d, i) {
-                return `<td>${i}</td><td>${d.id}</td><td>${Math.floor(d.left5).toString()}</td>
-                <td>${Math.floor(d.left4).toString()}</td><td>${Math.floor(d.left3).toString()}</td>
-                <td>${Math.floor(d.left2).toString()}</td><td>${Math.floor(d.left1).toString()}</td>
-                <td>${Math.floor(d.readings).toString()}</td><td>${Math.floor(d.right1).toString()}</td>
-                <td>${Math.floor(d.right2).toString()}</td><td>${Math.floor(d.right3).toString()}</td>
-                <td>${Math.floor(d.right4).toString()}</td><td>${Math.floor(d.right5).toString()}</td>`
+                return `<td>${i}</td><td><a href=\"/forecast/${d.id}\">${d.id}</a></td><td>${Math.floor(d.left5).toString()}</td>
+                <td>${Math.round(d.left4).toString()}</td><td>${Math.round(d.left3).toString()}</td>
+                <td>${Math.round(d.left2).toString()}</td><td>${Math.round(d.left1).toString()}</td>
+                <td>${Math.round(d.readings).toString()}</td><td>${Math.round(d.right1).toString()}</td>
+                <td>${Math.round(d.right2).toString()}</td><td>${Math.round(d.right3).toString()}</td>
+                <td>${Math.round(d.right4).toString()}</td><td>${Math.round(d.right5).toString()}</td>`
             });
     })
 
