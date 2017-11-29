@@ -140,8 +140,21 @@ def performance_test(request):
 
 
 def performance(request):
+    '''
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
-    
+    query = "select p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and MODEL = 0"
+    cursor.execute(query)
+
+    data = []
+    for (hour_ahead, prediction, real) in cursor:
+        record = {"HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
+        data.append(record)
+
+    import pandas as pd
+    table = pd.DataFrame(data)
+    table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
+    '''
+
     return render(request, 'performance.html')
