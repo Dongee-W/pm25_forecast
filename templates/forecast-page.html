@@ -5,6 +5,8 @@
 
 {% block local_import %}
 <link rel="stylesheet" href="{% static "css/forecast.css" %}">
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css' rel='stylesheet'/>
 {% endblock %}
 
 {% block content %}
@@ -26,6 +28,7 @@
         </filter>
     </defs>
 </svg>
+<div id='map' style='width: 100%; height: 300px;'></div>
 <script type="text/javascript">
     
     var parseTime = d3.timeParse("%Y%m%d%H");
@@ -38,7 +41,7 @@
     }
 
     var w = 1020;
-    var h = 630;
+    var h = 580;
     var left_paddings = 40;
     var right_paddings = 40;
     var bottom_paddings = 40;
@@ -292,6 +295,13 @@
             .call(xAxis);
 
     
+    });
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnl0aGVtYXBjb2xsZWN0b3IiLCJhIjoiY2phNjg4NGZjM2plajJxbDc3emgxNXd5bCJ9.0YwLUH-n_PyboM3gTZtTeg';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v10',
+        center: [121.186052, 24.930348],
+        zoom: 8
     });
 </script>
 {% endblock %}

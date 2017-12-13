@@ -5,40 +5,48 @@
 
 {% block local_import %}
 <link rel="stylesheet" href="{% static "css/overview.css" %}">
+<script type="text/javascript" src="{% static "js/jquery.tablesort.js" %}"></script>
 {% endblock %}
 
 {% block content %}
 <h2 class="ui center aligned icon header" id="center-message">
     <i class="calculator icon"></i>
     <div class="content">
-        PM 2.5 Forecast Evaluaion
-        <div class="sub header">Overview</div>
+        PM 2.5 Forecast - Mahajan
+        <div class="sub header">Last update: 2017-12-13 1pm</div>
     </div>
 </h2>
-<table class="ui celled table" id="table">
+<table class="ui sortable celled table" id="table">
     <thead>
-        <tr><th>Site</th>
-        <th>Site ID</th>
-        <th>5 hours</th>
-        <th>4 hours</th>
-        <th>3 hours</th>
-        <th>2 hours</th>
-        <th>1 hours</th>
-        <th>
-            <div class="ui label red">
-            Now
-            </div></th>
-        <th>1 hours later</th>
-        <th>2 hours later</th>
-        <th>3 hours later</th>
-        <th>4 hours later</th>
-        <th>5 hours later</th>
+        <tr class="numerical"><th>Site</th>
+            <th class="string">Site ID</th>
+            <th class="minus">-5</th>
+            <th class="minus">-4</th>
+            <th class="minus">-3</th>
+            <th class="minus">-2</th>
+            <th class="minus">-1</th>
+            <th class="numerical">
+                <div class="ui label red">
+                Now
+                </div></th>
+            <th class="numerical">1+</th>
+            <th class="numerical">2+</th>
+            <th class="numerical">3+</th>
+            <th class="numerical">4+</th>
+            <th class="numerical">5+</th>
     </tr></thead>
     <tbody>
       
     </tbody>
 </table>
 <script type="text/javascript">
+
+    var colorPicker = function(readings) {
+        if (readings >= 0 && readings <= 10) return "rgb(173, 241, 120)"
+        else if (readings > 10 && readings <= 20) return "rgb(61, 145, 234)"
+        else if (readings > 20) return "rgb(234, 117, 160)"
+        else return "rgb(119, 119, 119)"
+    }
     var rowConverter = function(d) {
         return {
             id: d["ID"],
@@ -56,21 +64,74 @@
         }
     }
 
-    d3.csv("{% static filename %}", rowConverter, function(dataset) {
+    d3.csv("{% static "overview_2017112707.csv" %}", rowConverter, function(dataset) {
         d3.select("tbody")
             .selectAll("tr")
             .data(dataset)
             .enter()
             .append("tr")
             .html(function(d, i) {
-                return `<td>${i}</td><td><a href=\"/forecast/${d.id}\">${d.id}</a></td><td>${Math.floor(d.left5).toString()}</td>
-                <td>${Math.round(d.left4).toString()}</td><td>${Math.round(d.left3).toString()}</td>
-                <td>${Math.round(d.left2).toString()}</td><td>${Math.round(d.left1).toString()}</td>
-                <td>${Math.round(d.readings).toString()}</td><td>${Math.round(d.right1).toString()}</td>
-                <td>${Math.round(d.right2).toString()}</td><td>${Math.round(d.right3).toString()}</td>
-                <td>${Math.round(d.right4).toString()}</td><td>${Math.round(d.right5).toString()}</td>`
+                var m5error = d.readings == "0" || isNaN(d.left5) || isNaN(d.readings)  ? 
+                    "N/A" : Math.round((Math.abs(d.left5 - d.readings) / d.readings * 100)).toString()+ "%"
+                var m4error = d.readings == "0" || isNaN(d.left4) || isNaN(d.readings)  ? 
+                    "N/A" : Math.round((Math.abs(d.left4 - d.readings) / d.readings * 100)).toString()+ "%"
+                var m3error = d.readings == "0" || isNaN(d.left3) || isNaN(d.readings)  ? 
+                    "N/A" : Math.round((Math.abs(d.left3 - d.readings) / d.readings * 100)).toString()+ "%"
+                var m2error = d.readings == "0" || isNaN(d.left2) || isNaN(d.readings)  ? 
+                    "N/A" : Math.round((Math.abs(d.left2 - d.readings) / d.readings * 100)).toString()+ "%"
+                var m1error = d.readings == "0" || isNaN(d.left1) || isNaN(d.readings)  ? 
+                    "N/A" : Math.round((Math.abs(d.left1 - d.readings) / d.readings * 100)).toString()+ "%"
+
+                var m5errorColor = m5error == "N/A" ? "rgb(119, 119, 119)" : colorPicker(parseInt(m5error.slice(0, -1)))
+                var m4errorColor = m4error == "N/A" ? "rgb(119, 119, 119)" : colorPicker(parseInt(m4error.slice(0, -1)))
+                var m3errorColor = m3error == "N/A" ? "rgb(119, 119, 119)" : colorPicker(parseInt(m3error.slice(0, -1)))
+                var m2errorColor = m2error == "N/A" ? "rgb(119, 119, 119)" : colorPicker(parseInt(m2error.slice(0, -1)))
+                var m1errorColor = m1error == "N/A" ? "rgb(119, 119, 119)" : colorPicker(parseInt(m1error.slice(0, -1)))
+
+                var m1errorHTML = "<span style=\"color:" + m1errorColor + ";font-size: 80%\"> (" + m1error + ")</span>"
+                var m2errorHTML = "<span style=\"color:" + m2errorColor + ";font-size: 80%\"> (" + m2error + ")</span>"
+                var m3errorHTML = "<span style=\"color:" + m3errorColor + ";font-size: 80%\"> (" + m3error + ")</span>"
+                var m4errorHTML = "<span style=\"color:" + m4errorColor + ";font-size: 80%\"> (" + m4error + ")</span>"
+                var m5errorHTML = "<span style=\"color:" + m5errorColor + ";font-size: 80%\"> (" + m5error + ")</span>"
+
+                var m5content = isNaN(d.left5) ? "N/A": Math.round(d.left5).toString()
+                var m4content = isNaN(d.left4) ? "N/A": Math.round(d.left4).toString()
+                var m3content = isNaN(d.left3) ? "N/A": Math.round(d.left3).toString()
+                var m2content = isNaN(d.left2) ? "N/A": Math.round(d.left2).toString()
+                var m1content = isNaN(d.left1) ? "N/A": Math.round(d.left1).toString()
+                var nowContent = isNaN(d.readings) ? "N/A": Math.round(d.readings).toString()
+                var p1content = isNaN(d.right1) ? "N/A": Math.round(d.right1).toString()
+                var p2content = isNaN(d.right2) ? "N/A": Math.round(d.right2).toString()
+                var p3content = isNaN(d.right3) ? "N/A": Math.round(d.right3).toString()
+                var p4content = isNaN(d.right4) ? "N/A": Math.round(d.right4).toString()
+                var p5content = isNaN(d.right5) ? "N/A": Math.round(d.right5).toString()
+
+
+                return `<td data-sort-value=\"${i + 1}\">${i + 1}</td>
+                <td>${d.id}</td>
+                <td data-sort-value=\"${m5error}\">${m5content + m5errorHTML}</td>
+                <td data-sort-value=\"${m4error}\">${m4content + m4errorHTML}</td>
+                <td data-sort-value=\"${m3error}\">${m3content + m3errorHTML}</td>
+                <td data-sort-value=\"${m2error}\">${m2content + m2errorHTML}</td>
+                <td data-sort-value=\"${m1error}\">${m1content + m1errorHTML}</td>
+                <td data-sort-value=\"${nowContent}\">${nowContent}</td>
+                <td data-sort-value=\"${p1content}\">${p1content}</td>
+                <td data-sort-value=\"${p2content}\"v>${p2content}</td>
+                <td data-sort-value=\"${p3content}\">${p3content}</td>
+                <td data-sort-value=\"${p4content}\">${p4content}</td>
+                <td data-sort-value=\"${p5content}\">${p5content}</td>`
             });
     })
+    $('thead th.minus').data('sortBy', function(th, td, tablesort) {
+        if (td.attr("data-sort-value") == "N/A") return -1
+        else return parseInt(td.attr("data-sort-value").slice(0, -1));
+    });
+    $('thead th.numerical').data('sortBy', function(th, td, tablesort) {
+        if (td.attr("data-sort-value") == "N/A") return -1
+        else return parseInt(td.attr("data-sort-value"));
+    });
+    $('table').tablesort(); 
+    
 
 
 </script>
