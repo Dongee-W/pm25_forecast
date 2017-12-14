@@ -23,10 +23,11 @@ def overview(request):
     hourString = '{0:02d}'.format(current.hour)
     
     # parameters for testing
-    
+    '''
     dateString = '20171127'
     hourString = '16'
-    
+    '''
+
     # parameters end ...
 
     import mysql.connector
@@ -93,9 +94,10 @@ def forecast(request, station_id):
     hourString = '{0:02d}'.format(current.hour)
     
     # parameters for testing
-    
+    '''
     dateString = '20171127'
     hourString = '16'
+    '''
     #station_id = 'FT_LIVE8CE7A9EC_G5N'
     
     # parameters end ...
