@@ -30,7 +30,7 @@ def overview(request):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
+    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
     queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s"
     cursor.execute(queryLeft, (dateString, hourString))
@@ -101,7 +101,7 @@ def forecast(request, station_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
+    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
     query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
     cursor.execute(query, (station_id, dateString, hourString))
@@ -142,7 +142,7 @@ def performance_test(request):
 def performance(request):
     '''
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='namcy', host='127.0.0.1', database='pm25_forecast')
+    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
     query = "select p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and MODEL = 0"
     cursor.execute(query)
