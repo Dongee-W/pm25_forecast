@@ -79,7 +79,8 @@ def overview(request, model_id):
 
     if (str(model_id) == '0'):
         modelName = "Mahajan"
-    else modelName = "Yang"
+    else:
+        modelName = "Yang"
 
     context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName}
 
