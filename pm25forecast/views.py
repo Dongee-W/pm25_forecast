@@ -13,7 +13,7 @@ def overview_test(request):
     context = {'filename': "overview_2017112707.csv"}
     return render(request, 'overview.html', context)
 
-def overview(request):
+def overview(request, model_id):
     import pytz
     import datetime
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
@@ -33,16 +33,16 @@ def overview(request):
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
-    queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s"
-    cursor.execute(queryLeft, (dateString, hourString))
+    queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
+    cursor.execute(queryLeft, (dateString, hourString, str(model_id)))
 
     leftHalfData = []
     for (id, hour_ahead, prediction) in cursor:
         record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
         leftHalfData.append(record)
 
-    queryRight = "select ID, HOUR_AHEAD, PREDICTION from predictions where DATE = %s and HOUR = %s"
-    cursor.execute(queryRight, (dateString, hourString))
+    queryRight = "select ID, HOUR_AHEAD, PREDICTION from predictions where DATE = %s and HOUR = %s and MODEL = %s"
+    cursor.execute(queryRight, (dateString, hourString, str(model_id)))
 
     rightHalfData= []
     for (id, hour_ahead, prediction) in cursor:
@@ -76,7 +76,12 @@ def overview(request):
     else:
         return HttpResponse("Data not available right now, try again later.")
     
-    context = {'filename': ("overview_" + dateString + hourString + ".csv")}
+
+    if (str(model_id) == '0'):
+        modelName = "Mahajan"
+    else modelName = "Yang"
+
+    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName}
 
     return render(request, 'overview.html', context)
 
