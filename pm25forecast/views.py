@@ -78,7 +78,7 @@ def overview(request, model_id):
         perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
         perfectTable['ID'] = perfectTable.index
 
-        perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + ".csv"), index=False)
+        perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
     else:
         
         adjusted = current - datetime.timedelta(hours = 1)
@@ -86,12 +86,12 @@ def overview(request, model_id):
 
         adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
         adjustHourString = '{0:02d}'.format(adjusted.hour)
-        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName}
+        context = {'filename': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName}
 
         return render(request, 'overview.html', context)
     
 
-    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, 'lastUpdate': name}
+    context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
 
     return render(request, 'overview.html', context)
 
