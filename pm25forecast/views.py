@@ -86,12 +86,12 @@ def overview(request, model_id):
 
         adjustDateString = str(adjustName.year) + '{0:02d}'.format(adjustName.month) + '{0:02d}'.format(adjustName.day)
         adjustHourString = '{0:02d}'.format(adjustName.hour)
-        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, lastUpdate: adjustDateString + " " + adjustHourString}
+        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, 'lastUpdate': adjustDateString + " " + adjustHourString}
 
         return render(request, 'overview.html', context)
     
 
-    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, lastUpdate: dateString + " " + hourString}
+    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, 'lastUpdate': dateString + " " + hourString}
 
     return render(request, 'overview.html', context)
 
