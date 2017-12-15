@@ -3,6 +3,8 @@ from django.shortcuts import render
 
 import os
 import datetime
+import pytz
+import datetime
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -14,8 +16,7 @@ def overview_test(request):
     return render(request, 'overview.html', context)
 
 def overview(request, model_id):
-    import pytz
-    import datetime
+
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
     name=current.strftime('%Y%m%d%H')
 
@@ -58,6 +59,11 @@ def overview(request, model_id):
         dataNow.append(record)
 
 
+    if (str(model_id) == '0'):
+        modelName = "Mahajan"
+    else:
+        modelName = "Yang"
+
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
         import pandas as pd
         resultSetLeft = pd.DataFrame(leftHalfData)
@@ -74,15 +80,18 @@ def overview(request, model_id):
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + ".csv"), index=False)
     else:
-        return HttpResponse("Data not available right now, try again later.")
+        
+        adjusted = current - datetime.timedelta(hours = 1)
+        adjustName=adjusted.strftime('%Y%m%d%H')
+
+        adjustDateString = str(adjustName.year) + '{0:02d}'.format(adjustName.month) + '{0:02d}'.format(adjustName.day)
+        adjustHourString = '{0:02d}'.format(adjustName.hour)
+        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, lastUpdate: adjustDateString + " " + adjustHourString}
+
+        return render(request, 'overview.html', context)
     
 
-    if (str(model_id) == '0'):
-        modelName = "Mahajan"
-    else:
-        modelName = "Yang"
-
-    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName}
+    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, lastUpdate: dateString + " " + hourString}
 
     return render(request, 'overview.html', context)
 
