@@ -18,7 +18,7 @@ def overview_test(request):
 def overview(request, model_id):
 
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
-    name=current.strftime('%Y%m%d%H')
+    name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
@@ -82,16 +82,16 @@ def overview(request, model_id):
     else:
         
         adjusted = current - datetime.timedelta(hours = 1)
-        adjustName=adjusted.strftime('%Y%m%d%H')
+        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
 
-        adjustDateString = str(adjustName.year) + '{0:02d}'.format(adjustName.month) + '{0:02d}'.format(adjustName.day)
-        adjustHourString = '{0:02d}'.format(adjustName.hour)
-        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, 'lastUpdate': adjustDateString + " " + adjustHourString}
+        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
+        adjustHourString = '{0:02d}'.format(adjusted.hour)
+        context = {'filename': ("overview_" + adjustDateString + adjustHourString + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName}
 
         return render(request, 'overview.html', context)
     
 
-    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, 'lastUpdate': dateString + " " + hourString}
+    context = {'filename': ("overview_" + dateString + hourString + ".csv"), 'modelName': modelName, 'lastUpdate': name}
 
     return render(request, 'overview.html', context)
 
