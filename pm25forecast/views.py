@@ -6,6 +6,9 @@ import datetime
 import pytz
 import datetime
 
+import pandas as pd
+import numpy as np
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def index(request):
@@ -152,26 +155,81 @@ def forecast(request, station_id):
     else:
         return HttpResponse("Data not available right now, try again later.")
 
-def performance_test(request):
-    return render(request, 'performance.html')
+def main_test(request):
+    context = {'xaxis': "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", 'dataStringM_1': "[10, 9.2, 9.0, 7.9, 7.5, 4,  3, 2, 1, 0]", 'dataStringY_1': "[10, 9.6, 9.3, 8.9, 7.5, 4,  3, 2, 1, 0]"}
+    return render(request, 'main.html', context)
 
 
-def performance(request):
-    '''
+def main(request):
+
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
-    query = "select p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and MODEL = 0"
+    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR"
     cursor.execute(query)
 
     data = []
-    for (hour_ahead, prediction, real) in cursor:
-        record = {"HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
+    for (model_id, hour_ahead, prediction, real) in cursor:
+        record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
         data.append(record)
 
-    import pandas as pd
     table = pd.DataFrame(data)
     table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
-    '''
+    full = table.replace([np.inf, -np.inf], np.nan).dropna()
 
-    return render(request, 'performance.html')
+    seriesM_1 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
+    seriesY_1 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
+    seriesM_2 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
+    seriesY_2 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
+    seriesM_3 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
+    seriesY_3 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
+    seriesM_4 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
+    seriesY_4 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
+    seriesM_5 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
+    seriesY_5 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
+
+    histoM_1 = np.histogram(seriesM_1.values, range=(0, 1), bins=20, normed=True)
+    histoY_1 = np.histogram(seriesY_1.values, range=(0, 1), bins=20, normed=True)
+    histoM_2 = np.histogram(seriesM_2.values, range=(0, 1), bins=20, normed=True)
+    histoY_2 = np.histogram(seriesY_2.values, range=(0, 1), bins=20, normed=True)
+    histoM_3 = np.histogram(seriesM_3.values, range=(0, 1), bins=20, normed=True)
+    histoY_3 = np.histogram(seriesY_3.values, range=(0, 1), bins=20, normed=True)
+    histoM_4 = np.histogram(seriesM_4.values, range=(0, 1), bins=20, normed=True)
+    histoY_4 = np.histogram(seriesY_4.values, range=(0, 1), bins=20, normed=True)
+    histoM_5 = np.histogram(seriesM_5.values, range=(0, 1), bins=20, normed=True)
+    histoY_5 = np.histogram(seriesY_5.values, range=(0, 1), bins=20, normed=True)
+
+    cdfM_1 = np.cumsum(histoM_1[0])
+    cdfY_1 = np.cumsum(histoY_1[0])
+    cdfM_2 = np.cumsum(histoM_2[0])
+    cdfY_2 = np.cumsum(histoY_2[0])
+    cdfM_3 = np.cumsum(histoM_3[0])
+    cdfY_3 = np.cumsum(histoY_3[0])
+    cdfM_4 = np.cumsum(histoM_4[0])
+    cdfY_4 = np.cumsum(histoY_4[0])
+    cdfM_5 = np.cumsum(histoM_5[0])
+    cdfY_5 = np.cumsum(histoY_5[0])
+
+    dataStringM_1 = str(cdfM_1.tolist())
+    dataStringY_1 = str(cdfY_1.tolist())
+    dataStringM_2 = str(cdfM_2.tolist())
+    dataStringY_2 = str(cdfY_2.tolist())
+    dataStringM_3 = str(cdfM_3.tolist())
+    dataStringY_3 = str(cdfY_3.tolist())
+    dataStringM_4 = str(cdfM_4.tolist())
+    dataStringY_4 = str(cdfY_4.tolist())
+    dataStringM_5 = str(cdfM_5.tolist())
+    dataStringY_5 = str(cdfY_5.tolist())
+
+    xaxis = str(histoM_1[1].tolist())
+
+    medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
+
+    context = {'xaxis': xaxis, dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
+    'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
+    'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
+    'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
+    'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5}
+    
+
+    return render(request, 'main.html', context)
