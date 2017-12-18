@@ -225,7 +225,7 @@ def main(request):
 
     medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
 
-    context = {'xaxis': xaxis, dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
+    context = {'xaxis': xaxis, 'dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
     'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
     'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
     'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
