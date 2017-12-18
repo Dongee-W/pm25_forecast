@@ -229,7 +229,13 @@ def main(request):
     'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
     'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
     'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
-    'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5}
+    'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5,
+    'medianErrorM_1': int(round(medianError[0][1]*100)), 'medianErrorM_2': int(round(medianError[0][2]*100)),
+    'medianErrorM_3': int(round(medianError[0][3]*100)), 'medianErrorM_4': int(round(medianError[0][4]*100)),
+    'medianErrorM_5': int(round(medianError[0][5]*100)), 'medianErrorY_1': int(round(medianError[1][1]*100)),
+    'medianErrorY_2': int(round(medianError[1][2]*100)), 'medianErrorY_3': int(round(medianError[1][3]*100)),
+    'medianErrorY_4': int(round(medianError[1][4]*100)), 'medianErrorY_5': int(round(medianError[1][5]*100))
+    }
     
 
     return render(request, 'main.html', context)
