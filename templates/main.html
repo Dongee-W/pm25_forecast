@@ -165,9 +165,11 @@
           Elliot Fu is a film-maker from New York.
         </div>
       </div>
-      <div class="ui bottom attached button">
-        <i class="arrow right icon"></i>
-        Go to model overview
+      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/0';">
+        <div class="visible content">Go to model overview</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
+        </div>
       </div>
     </div>
     <div class="card">
@@ -177,13 +179,15 @@
           Veronika Ossi is a set designer living in New York who enjoys kittens, music, and partying.
         </div>
       </div>
-      <div class="ui bottom attached button">
-        <i class="arrow right icon"></i>
-        Go to model overview
+      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/1'">
+        <div class="visible content">Go to model overview</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
+        </div>
       </div>
     </div>
   </div>
-</div>
+
 <script type="text/javascript">
             Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
 
