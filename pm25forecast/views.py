@@ -4,7 +4,6 @@ from django.shortcuts import render
 import os
 import datetime
 import pytz
-import datetime
 
 import pandas as pd
 import numpy as np
@@ -25,7 +24,7 @@ def overview(request, model_id):
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
-    
+
     # parameters for testing
     '''
     dateString = '20171127'
@@ -68,7 +67,6 @@ def overview(request, model_id):
         modelName = "Yang"
 
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
-        import pandas as pd
         resultSetLeft = pd.DataFrame(leftHalfData)
         resultSetRight = pd.DataFrame(rightHalfData)
         resultSetNow = pd.DataFrame(dataNow).set_index('ID')
