@@ -94,6 +94,9 @@ def overview(request, model_id):
 
     context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
 
+    cursor.close()
+    cnx.close()
+
     return render(request, 'overview.html', context)
 
 def forecast_test(request):
@@ -104,7 +107,7 @@ def forecast(request, station_id):
     import pytz
     import datetime
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
-    name=current.strftime('%Y%m%d%H')
+    name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
@@ -138,20 +141,51 @@ def forecast(request, station_id):
         record = {"ID": id, "DATE": targetDate, "HOUR": targetHour, "READING": prediction}
         data.append(record)
 
-    cursor.close()
-    cnx.close()
+    
 
-    if len(data) > 0:
-        import pandas as pd
+    if len(data) > 1:
         queryResult = pd.DataFrame(data)
         queryResult['TIMESTAMP'] = queryResult['DATE'] + queryResult['HOUR']
         final = queryResult.drop(["DATE", "HOUR"], axis=1)
         final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
     
-        context = {'station_id': station_id, 'filename': (station_id + ".csv")}
+        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': name}
         return render(request, 'forecast-page.html', context)
     else:
-        return HttpResponse("Data not available right now, try again later.")
+        adjusted = current - datetime.timedelta(hours = 1)
+        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
+
+        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
+        adjustHourString = '{0:02d}'.format(adjusted.hour)
+
+        query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
+        cursor.execute(query, (station_id, adjustDateString, adjustHourString))
+
+        data = []
+        for (id, date, hour, reading) in cursor:
+            record = {"ID": id, "DATE": date, "HOUR": hour, "READING": reading}
+            data.append(record)
+
+        query_predicion = "select ID, DATE, HOUR, HOUR_AHEAD, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s and MODEL = 0 ORDER BY HOUR_AHEAD"
+        cursor.execute(query_predicion, (station_id, adjustDateString, adjustHourString))
+        for (id, date, hour, hour_ahead, prediction) in cursor:
+            targetTime = datetime.datetime.strptime(date + hour, '%Y%m%d%H') + datetime.timedelta(hours = hour_ahead)
+            targetDate = str(targetTime.year) + '{0:02d}'.format(targetTime.month) + '{0:02d}'.format(targetTime.day)
+            targetHour = '{0:02d}'.format(targetTime.hour)
+            record = {"ID": id, "DATE": targetDate, "HOUR": targetHour, "READING": prediction}
+            data.append(record)
+        queryResult = pd.DataFrame(data)
+        queryResult['TIMESTAMP'] = queryResult['DATE'] + queryResult['HOUR']
+        final = queryResult.drop(["DATE", "HOUR"], axis=1)
+        final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
+
+        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': adjustName}
+        return render(request, 'forecast-page.html', context)
+
+    cursor.close()
+    cnx.close()
+
+        
 
 def main_test(request):
     context = {'xaxis': "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", 'dataStringM_1': "[10, 9.2, 9.0, 7.9, 7.5, 4,  3, 2, 1, 0]", 'dataStringY_1': "[10, 9.6, 9.3, 8.9, 7.5, 4,  3, 2, 1, 0]"}
@@ -235,5 +269,7 @@ def main(request):
     'medianErrorY_4': int(round(medianError[1][4]*100)), 'medianErrorY_5': int(round(medianError[1][5]*100))
     }
     
+    cursor.close()
+    cnx.close()
 
     return render(request, 'main.html', context)
