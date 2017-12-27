@@ -53,11 +53,15 @@
     // green: rgb(0, 179, 134)
     // yellow: rgb(255, 214, 51)
 
-    var colorPicker = function(readings) {
-        if (readings < 35) return "rgb(51, 153, 102)"
-        else if (readings >= 35 && readings < 53) return "rgb(255, 214, 51)"
-        else if (readings >= 53 && readings < 70) return "rgb(255, 92, 51)"
-        else return "rgb(102, 0, 204)"
+    var colorPicker = function(readings, i) {
+        if (readings < 35 && i != 0) return "rgba(51, 153, 102, 0.4)"
+        else if (readings >= 35 && readings < 53 && i != 0) return "rgba(255, 214, 51, 0.4)"
+        else if (readings >= 53 && readings < 70 && i != 0) return "rgba(255, 92, 51, 0.4)"
+        else if (readings >= 70 && i != 0) return "rgba(102, 0, 204, 0.4)"
+        else if (readings < 35) return "rgba(51, 153, 102, 1)"
+        else if (readings >= 35 && readings < 53) return "rgba(255, 214, 51, 1)"
+        else if (readings >= 53 && readings < 70) return "rgba(255, 92, 51, 1)"
+        else return "rgba(102, 0, 204, 1)"
     }
 
     var textSize = function(readings) {
@@ -203,7 +207,7 @@
             .attr("y1", function(d, i) { return yscale(d.readings) - 8;})
             .attr("x2", function(d, i) { return time_scale(d.timestamp);})
             .attr("y2", function(d, i) { return position[i];})
-            .attr("style", function(d) { return "stroke:" + colorPicker(d.readings) + ";stroke-width:5";})
+            .attr("style", function(d, i) { return "stroke:" + colorPicker(d.readings, i) + ";stroke-width:5";})
             ;
 
 
@@ -217,7 +221,7 @@
             .attr("cx", function(d, i) { return time_scale(d.timestamp);})
             .attr("cy", function(d, i) { return position[i];})
             .attr("r", meter_radius)
-            .attr("style", function(d) {return "fill:" + colorPicker(d.readings);})
+            .attr("style", function(d, i) {return "fill:" + colorPicker(d.readings, i);})
             .attr("filter", "url(#f1)");
         
         d3.select("svg")
@@ -241,7 +245,7 @@
             .attr("cx", function(d, i) { return time_scale(d.timestamp);})
             .attr("cy", function(d, i) { return position[i];})
             .attr("r", meter_inner_diameter)
-            .attr("style", function(d) {return "fill:" + colorPicker(d.readings);})
+            .attr("style", function(d, i) {return "fill:" + colorPicker(d.readings, i);})
             .attr("filter", "url(#f1)");
 
         /* Text */
