@@ -310,7 +310,7 @@
 
     var popup1 = new mapboxgl.Popup({closeButton: false})
         .setLngLat([{{lon}}, {{lat}}])
-        .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: 24.2195547</div><div class="item">Longitude: 120.5020581</div></div>')
+        .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: {{lat}}</div><div class="item">Longitude: {{lon}}</div></div>')
         .addTo(map);
 
     var el = document.createElement('img');
