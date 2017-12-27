@@ -122,6 +122,22 @@ def forecast(request, station_id):
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
+
+    query = "select ID, LATITUDE, LONGTITUDE from gps where ID = %s"
+    cursor.execute(query, (station_id, ))
+    gps = []
+
+    for (id, lat, lon) in cursor:
+        recordGPS = {"ID": id, "LATITUDE": lat, "LONGTITUDE": lon}
+        gps.append(recordGPS)
+
+    try:
+        latitude = str(float(gps[0]['LATITUDE']))
+        longtitude = str(float(gps[0]['LONGTITUDE']))
+    except:
+        print("Getting lat, lon failed.")
+        
+
     query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
     cursor.execute(query, (station_id, dateString, hourString))
 
@@ -140,14 +156,13 @@ def forecast(request, station_id):
         data.append(record)
 
     
-
     if len(data) > 1:
         queryResult = pd.DataFrame(data)
         queryResult['TIMESTAMP'] = queryResult['DATE'] + queryResult['HOUR']
         final = queryResult.drop(["DATE", "HOUR"], axis=1)
         final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
     
-        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': name}
+        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': name, 'lat': latitude, 'lon': longtitude}
         return render(request, 'forecast-page.html', context)
     else:
         adjusted = current - datetime.timedelta(hours = 1)
@@ -177,7 +192,7 @@ def forecast(request, station_id):
         final = queryResult.drop(["DATE", "HOUR"], axis=1)
         final.to_csv(os.path.join(BASE_DIR, "static/" + station_id + ".csv"), index=False)
 
-        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': adjustName}
+        context = {'station_id': station_id, 'filename': (station_id + ".csv"), 'lastUpdate': adjustName, 'lat': latitude, 'lon': longtitude}
         return render(request, 'forecast-page.html', context)
 
     cursor.close()

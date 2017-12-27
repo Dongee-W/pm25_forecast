@@ -304,12 +304,12 @@
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v10',
-        center: [120.5020581, 24.2195547],
+        center: [{{lon}}, {{lat}}],
         zoom: 10
     });
 
     var popup1 = new mapboxgl.Popup({closeButton: false})
-        .setLngLat([120.5020581, 24.2195547])
+        .setLngLat([{{lon}}, {{lat}}])
         .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: 24.2195547</div><div class="item">Longitude: 120.5020581</div></div>')
         .addTo(map);
 
@@ -320,7 +320,7 @@
     el.style.height = '26px';
 
     var marker = new mapboxgl.Marker(el, {offset:[0, 9]})
-        .setLngLat([120.5020581, 24.2195547]) 
+        .setLngLat([{{lon}}, {{lat}}]) 
         .addTo(map);
 </script>
 {% endblock %}
