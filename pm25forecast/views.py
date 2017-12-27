@@ -104,8 +104,6 @@ def forecast_test(request):
     return render(request, 'forecast-page.html', context)
 
 def forecast(request, station_id):
-    import pytz
-    import datetime
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
     name=current.strftime('%Y-%m-%d %I%p')
 
@@ -192,6 +190,8 @@ def main_test(request):
     return render(request, 'main.html', context)
 
 def main(request):
+
+    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
 
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
