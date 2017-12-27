@@ -191,14 +191,17 @@ def main_test(request):
     context = {'xaxis': "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", 'dataStringM_1': "[10, 9.2, 9.0, 7.9, 7.5, 4,  3, 2, 1, 0]", 'dataStringY_1': "[10, 9.6, 9.3, 8.9, 7.5, 4,  3, 2, 1, 0]"}
     return render(request, 'main.html', context)
 
-
 def main(request):
 
     import mysql.connector
     cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
     cursor = cnx.cursor()
-    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR"
-    cursor.execute(query)
+    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
+
+    outOfDate = current + datetime.timedelta(days=-3)
+    outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
+
+    cursor.execute(query, outOfDateString)
 
     data = []
     for (model_id, hour_ahead, prediction, real) in cursor:
