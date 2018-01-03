@@ -261,6 +261,9 @@ def main(request):
         for (model_id, hour_ahead, prediction, real) in cursor:
             record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
             data.append(record)
+        
+        cursor.close()
+        cnx.close()
 
         table = pd.DataFrame(data)
         table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
@@ -358,8 +361,5 @@ def main(request):
     'medianErrorY_2': statistics_1_2, 'medianErrorY_3': statistics_1_3,
     'medianErrorY_4': statistics_1_4, 'medianErrorY_5': statistics_1_5
     }
-    
-    cursor.close()
-    cnx.close()
 
     return render(request, 'main.html', context)
