@@ -4,6 +4,7 @@ from django.shortcuts import render
 import os
 import datetime
 import pytz
+from pathlib import Path
 
 import pandas as pd
 import numpy as np
@@ -24,6 +25,17 @@ def overview(request, model_id):
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
+
+    if (str(model_id) == '0'):
+        modelName = "Mahajan"
+    else:
+        modelName = "Yang"
+
+    lastest_file = Path(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"))
+
+    if lastest_file.is_file():
+        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
+        return render(request, 'overview.html', context)
 
     # parameters for testing
     '''
@@ -60,12 +72,6 @@ def overview(request, model_id):
         record = {"ID": id, "READING": reading}
         dataNow.append(record)
 
-
-    if (str(model_id) == '0'):
-        modelName = "Mahajan"
-    else:
-        modelName = "Yang"
-
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
         resultSetLeft = pd.DataFrame(leftHalfData)
         resultSetRight = pd.DataFrame(rightHalfData)
@@ -80,6 +86,10 @@ def overview(request, model_id):
         perfectTable['ID'] = perfectTable.index
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
+        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
+        cursor.close()
+        cnx.close()
+        return render(request, 'overview.html', context)
     else:
         
         adjusted = current - datetime.timedelta(hours = 1)
@@ -92,12 +102,7 @@ def overview(request, model_id):
         return render(request, 'overview.html', context)
     
 
-    context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
 
-    cursor.close()
-    cnx.close()
-
-    return render(request, 'overview.html', context)
 
 def forecast_test(request):
     context = {'station_id': "WF_3977799", 'filename': "1421GE.csv"}

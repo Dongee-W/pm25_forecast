@@ -156,7 +156,7 @@
     </div>
   </div>
 
-<div id="myDiv"><!-- Plotly chart will be drawn inside this DIV --></div>
+
 <div class="ui cards">
     <div class="card">
       <div class="content">
@@ -196,31 +196,7 @@
         }
 
         
-        var trace1 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'Mahajan model',
-            x: unpack(rows, 'Date'),
-            y: unpack(rows, 'AAPL.High'),
-            line: {color: 'rgb(255, 214, 51)'}
-        }
 
-        var trace2 = {
-            type: "scatter",
-            mode: "lines",
-            name: 'Yang model',
-            x: unpack(rows, 'Date'),
-            y: unpack(rows, 'AAPL.Low'),
-            line: {color: 'rgb(51, 153, 102)'}
-        }
-
-        var data = [trace1,trace2];
-            
-        var layout = {
-            title: 'Relative Error', 
-        };
-
-        Plotly.newPlot('myDiv', data, layout);
 
         var oneY = {
             x: {{xaxis}},
