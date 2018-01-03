@@ -213,83 +213,150 @@ def main(request):
 
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
 
-    import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
-    cursor = cnx.cursor()
-    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
+    dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
+    hourString = '{0:02d}'.format(current.hour)
+    filename = os.path.join(BASE_DIR, "static/main_" + dateString + hourString + ".txt")
 
-    outOfDate = current + datetime.timedelta(days=-2)
-    outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
+    lastest_file = Path(filename)
 
-    cursor.execute(query, outOfDateString)
+    if lastest_file.is_file():
+        with open(filename) as f:
+            content = f.readlines()
+        content = [x.strip() for x in content]
 
-    data = []
-    for (model_id, hour_ahead, prediction, real) in cursor:
-        record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
-        data.append(record)
 
-    table = pd.DataFrame(data)
-    table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
-    full = table.replace([np.inf, -np.inf], np.nan).dropna()
+        xaxis = content[0]
+        dataStringM_1 = content[1]
+        dataStringY_1 = content[2]
+        dataStringM_2 = content[3]
+        dataStringY_2 = content[4]
+        dataStringM_3 = content[5] 
+        dataStringY_3 = content[6] 
+        dataStringM_4 = content[7] 
+        dataStringY_4 = content[8] 
+        dataStringM_5 = content[9] 
+        dataStringY_5 = content[10]
+        statistics_0_1 = content[11]
+        statistics_0_2 = content[12]
+        statistics_0_3 = content[13]
+        statistics_0_4 = content[14]
+        statistics_0_5 = content[15]
+        statistics_1_1 = content[16]
+        statistics_1_2 = content[17]
+        statistics_1_3 = content[18]
+        statistics_1_4 = content[19]
+        statistics_1_5 =content[20]
+    else:
+        import mysql.connector
+        cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
+        cursor = cnx.cursor()
+        query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
-    seriesM_1 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
-    seriesY_1 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
-    seriesM_2 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
-    seriesY_2 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
-    seriesM_3 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
-    seriesY_3 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
-    seriesM_4 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
-    seriesY_4 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
-    seriesM_5 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
-    seriesY_5 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
+        outOfDate = current + datetime.timedelta(days=-3)
+        outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
-    histoM_1 = np.histogram(seriesM_1.values, range=(0, 1), bins=20, normed=True)
-    histoY_1 = np.histogram(seriesY_1.values, range=(0, 1), bins=20, normed=True)
-    histoM_2 = np.histogram(seriesM_2.values, range=(0, 1), bins=20, normed=True)
-    histoY_2 = np.histogram(seriesY_2.values, range=(0, 1), bins=20, normed=True)
-    histoM_3 = np.histogram(seriesM_3.values, range=(0, 1), bins=20, normed=True)
-    histoY_3 = np.histogram(seriesY_3.values, range=(0, 1), bins=20, normed=True)
-    histoM_4 = np.histogram(seriesM_4.values, range=(0, 1), bins=20, normed=True)
-    histoY_4 = np.histogram(seriesY_4.values, range=(0, 1), bins=20, normed=True)
-    histoM_5 = np.histogram(seriesM_5.values, range=(0, 1), bins=20, normed=True)
-    histoY_5 = np.histogram(seriesY_5.values, range=(0, 1), bins=20, normed=True)
+        cursor.execute(query, outOfDateString)
 
-    cdfM_1 = np.cumsum(histoM_1[0])
-    cdfY_1 = np.cumsum(histoY_1[0])
-    cdfM_2 = np.cumsum(histoM_2[0])
-    cdfY_2 = np.cumsum(histoY_2[0])
-    cdfM_3 = np.cumsum(histoM_3[0])
-    cdfY_3 = np.cumsum(histoY_3[0])
-    cdfM_4 = np.cumsum(histoM_4[0])
-    cdfY_4 = np.cumsum(histoY_4[0])
-    cdfM_5 = np.cumsum(histoM_5[0])
-    cdfY_5 = np.cumsum(histoY_5[0])
+        data = []
+        for (model_id, hour_ahead, prediction, real) in cursor:
+            record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
+            data.append(record)
 
-    dataStringM_1 = str([p / 20 for p in cdfM_1.tolist()])
-    dataStringY_1 = str([p / 20 for p in cdfY_1.tolist()])
-    dataStringM_2 = str([p / 20 for p in cdfM_2.tolist()])
-    dataStringY_2 = str([p / 20 for p in cdfY_2.tolist()])
-    dataStringM_3 = str([p / 20 for p in cdfM_3.tolist()])
-    dataStringY_3 = str([p / 20 for p in cdfY_3.tolist()])
-    dataStringM_4 = str([p / 20 for p in cdfM_4.tolist()])
-    dataStringY_4 = str([p / 20 for p in cdfY_4.tolist()])
-    dataStringM_5 = str([p / 20 for p in cdfM_5.tolist()])
-    dataStringY_5 = str([p / 20 for p in cdfY_5.tolist()])
+        table = pd.DataFrame(data)
+        table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
+        full = table.replace([np.inf, -np.inf], np.nan).dropna()
 
-    xaxis = str(histoM_1[1].tolist())
+        seriesM_1 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
+        seriesY_1 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 1)]['RELATIVE_ERROR']
+        seriesM_2 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
+        seriesY_2 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 2)]['RELATIVE_ERROR']
+        seriesM_3 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
+        seriesY_3 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 3)]['RELATIVE_ERROR']
+        seriesM_4 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
+        seriesY_4 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 4)]['RELATIVE_ERROR']
+        seriesM_5 = full[(full['MODEL'] == 0) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
+        seriesY_5 = full[(full['MODEL'] == 1) & (full['HOUR_AHEAD'] == 5)]['RELATIVE_ERROR']
 
-    medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
+        histoM_1 = np.histogram(seriesM_1.values, range=(0, 1), bins=20, normed=True)
+        histoY_1 = np.histogram(seriesY_1.values, range=(0, 1), bins=20, normed=True)
+        histoM_2 = np.histogram(seriesM_2.values, range=(0, 1), bins=20, normed=True)
+        histoY_2 = np.histogram(seriesY_2.values, range=(0, 1), bins=20, normed=True)
+        histoM_3 = np.histogram(seriesM_3.values, range=(0, 1), bins=20, normed=True)
+        histoY_3 = np.histogram(seriesY_3.values, range=(0, 1), bins=20, normed=True)
+        histoM_4 = np.histogram(seriesM_4.values, range=(0, 1), bins=20, normed=True)
+        histoY_4 = np.histogram(seriesY_4.values, range=(0, 1), bins=20, normed=True)
+        histoM_5 = np.histogram(seriesM_5.values, range=(0, 1), bins=20, normed=True)
+        histoY_5 = np.histogram(seriesY_5.values, range=(0, 1), bins=20, normed=True)
+
+        cdfM_1 = np.cumsum(histoM_1[0])
+        cdfY_1 = np.cumsum(histoY_1[0])
+        cdfM_2 = np.cumsum(histoM_2[0])
+        cdfY_2 = np.cumsum(histoY_2[0])
+        cdfM_3 = np.cumsum(histoM_3[0])
+        cdfY_3 = np.cumsum(histoY_3[0])
+        cdfM_4 = np.cumsum(histoM_4[0])
+        cdfY_4 = np.cumsum(histoY_4[0])
+        cdfM_5 = np.cumsum(histoM_5[0])
+        cdfY_5 = np.cumsum(histoY_5[0])
+
+        dataStringM_1 = str([p / 20 for p in cdfM_1.tolist()])
+        dataStringY_1 = str([p / 20 for p in cdfY_1.tolist()])
+        dataStringM_2 = str([p / 20 for p in cdfM_2.tolist()])
+        dataStringY_2 = str([p / 20 for p in cdfY_2.tolist()])
+        dataStringM_3 = str([p / 20 for p in cdfM_3.tolist()])
+        dataStringY_3 = str([p / 20 for p in cdfY_3.tolist()])
+        dataStringM_4 = str([p / 20 for p in cdfM_4.tolist()])
+        dataStringY_4 = str([p / 20 for p in cdfY_4.tolist()])
+        dataStringM_5 = str([p / 20 for p in cdfM_5.tolist()])
+        dataStringY_5 = str([p / 20 for p in cdfY_5.tolist()])
+
+        xaxis = str(histoM_1[1].tolist())
+
+        medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
+        statistics_0_1 = str(int(round(medianError[0][1]*100)))
+        statistics_0_2 = str(int(round(medianError[0][2]*100)))
+        statistics_0_3 = str(int(round(medianError[0][3]*100)))
+        statistics_0_4 = str(int(round(medianError[0][4]*100)))
+        statistics_0_5 = str(int(round(medianError[0][5]*100)))
+        statistics_1_1 = str(int(round(medianError[1][1]*100)))
+        statistics_1_2 = str(int(round(medianError[1][2]*100)))
+        statistics_1_3 = str(int(round(medianError[1][3]*100)))
+        statistics_1_4 = str(int(round(medianError[1][4]*100)))
+        statistics_1_5 = str(int(round(medianError[1][5]*100)))
+
+        with open(filename, "w") as text_file:
+            text_file.write(xaxis + "\n")
+            text_file.write(dataStringM_1 + "\n")
+            text_file.write(dataStringY_1 + "\n")
+            text_file.write(dataStringM_2 + "\n")
+            text_file.write(dataStringY_2 + "\n")
+            text_file.write(dataStringM_3 + "\n")
+            text_file.write(dataStringY_3 + "\n")
+            text_file.write(dataStringM_4 + "\n")
+            text_file.write(dataStringY_4 + "\n")
+            text_file.write(dataStringM_5 + "\n")
+            text_file.write(dataStringY_5 + "\n")
+            text_file.write(statistics_0_1 + "\n")
+            text_file.write(statistics_0_2 + "\n")
+            text_file.write(statistics_0_3 + "\n")
+            text_file.write(statistics_0_4 + "\n")
+            text_file.write(statistics_0_5 + "\n")
+            text_file.write(statistics_1_1 + "\n")
+            text_file.write(statistics_1_2 + "\n")
+            text_file.write(statistics_1_3 + "\n")
+            text_file.write(statistics_1_4 + "\n")
+            text_file.write(statistics_1_5 + "\n")
 
     context = {'xaxis': xaxis, 'dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
     'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
     'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
     'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
     'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5,
-    'medianErrorM_1': int(round(medianError[0][1]*100)), 'medianErrorM_2': int(round(medianError[0][2]*100)),
-    'medianErrorM_3': int(round(medianError[0][3]*100)), 'medianErrorM_4': int(round(medianError[0][4]*100)),
-    'medianErrorM_5': int(round(medianError[0][5]*100)), 'medianErrorY_1': int(round(medianError[1][1]*100)),
-    'medianErrorY_2': int(round(medianError[1][2]*100)), 'medianErrorY_3': int(round(medianError[1][3]*100)),
-    'medianErrorY_4': int(round(medianError[1][4]*100)), 'medianErrorY_5': int(round(medianError[1][5]*100))
+    'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+    'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
+    'medianErrorM_5': statistics_0_5, 'medianErrorY_1': statistics_1_1,
+    'medianErrorY_2': statistics_1_2, 'medianErrorY_3': statistics_1_3,
+    'medianErrorY_4': statistics_1_4, 'medianErrorY_5': statistics_1_5
     }
     
     cursor.close()
