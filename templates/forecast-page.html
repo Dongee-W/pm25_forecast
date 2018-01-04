@@ -1,332 +1,326 @@
+{% extends "base.html" %}
 {% load static %}
-<!doctype html>
 
-<html lang="en">
-    <head>
-    <meta charset="utf-8">
+{% block title %}PM2.5 forecast{% endblock %}
 
-    <title>D3 js playground</title>
-    <meta name="description" content="The HTML5 Herald">
-    <meta name="author" content="SitePoint">
+{% block local_import %}
+<link rel="stylesheet" href="{% static "css/forecast.css" %}">
+<script src='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.js'></script>
+<link href='https://api.mapbox.com/mapbox-gl-js/v0.42.0/mapbox-gl.css' rel='stylesheet'/>
+{% endblock %}
 
-    <link rel="stylesheet" href="{% static "css/styles.css" %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+{% block content %}
+<h2 class="ui center aligned icon header" id="center-message">
+    <i class="bar chart icon"></i>
+    <div class="content">
+            PM 2.5 Forecast for {{station_id}}
+        <div class="sub header">Last update: {{lastUpdate}}</div>
+    </div>
+</h2>
+<svg>
+    <defs>
+        <filter id="f1" x="-1" y="-1" width="300%" height="300%">
+            <feOffset result="offOut" in="SourceGraphic" dx="0" dy="1" />
+            <feColorMatrix result="matrixOut" in="offOut" type="matrix"
+            values="0.7 0 0 0 0 0 0.7 0 0 0 0 0 0.7 0 0 0 0 0 1 0" />
+            <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="1" />
+            <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+        </filter>
+    </defs>
+</svg>
+<div id='map' style='width: 100%; height: 300px;'></div>
+<script type="text/javascript">
     
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.2/d3.js"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
-    <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+    var parseTime = d3.timeParse("%Y%m%d%H");
+
+    var rowConverter = function(d) {
+        return {
+            timestamp: parseTime(d.TIMESTAMP),
+            readings: Math.round(parseFloat(d.READING))
+        }
+    }
+
+    var w = 1020;
+    var h = 580;
+    var left_paddings = 40;
+    var right_paddings = 40;
+    var bottom_paddings = 40;
+    var top_height = 400;
+    var chart_margin = 40;
+    var meter_radius = 75;
+    var meter_inner_diameter = 62;
+    var vertical_length = 150;
+    // green: rgb(0, 179, 134)
+    // yellow: rgb(255, 214, 51)
+
+    var colorPicker = function(readings, i) {
+        if (readings < 35 && i != 0) return "rgba(51, 153, 102, 0.4)"
+        else if (readings >= 35 && readings < 53 && i != 0) return "rgba(255, 214, 51, 0.4)"
+        else if (readings >= 53 && readings < 70 && i != 0) return "rgba(255, 92, 51, 0.4)"
+        else if (readings >= 70 && i != 0) return "rgba(102, 0, 204, 0.4)"
+        else if (readings < 35) return "rgba(51, 153, 102, 1)"
+        else if (readings >= 35 && readings < 53) return "rgba(255, 214, 51, 1)"
+        else if (readings >= 53 && readings < 70) return "rgba(255, 92, 51, 1)"
+        else return "rgba(102, 0, 204, 1)"
+    }
+
+    var textSize = function(readings) {
+        var numberOfDigit = Math.round(readings).toString().length
+        if (numberOfDigit == 1) return "65px"
+        else if (numberOfDigit == 2) return "50px"
+        else if (numberOfDigit == 3) return "40px"
+        else return "35px"
+    }
+
+    var textPositionAdjustment = function(readings) {
+        var numberOfDigit = Math.floor(readings).toString().length
+        if (numberOfDigit == 1) return 22
+        else if (numberOfDigit == 2) return 17
+        else if (numberOfDigit == 3) return 15
+        else return 14
+    }
+
     
     
+    d3.csv("{% static filename %}", rowConverter, function(dataset) {
+        
+        var readings_maximum = d3.max(dataset, function(d) {
+            return d.readings;
+        })
+        var readings_minimum = d3.min(dataset, function(d) {
+            return d.readings;
+        })
+        var readings_margin = (readings_maximum - readings_minimum) / 20;
 
-    <!--[if lt IE 9]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
-    <![endif]-->
-    </head>
+        /* The y scale for bottom chart */
+        var yscale = d3.scaleLinear()
+            .domain([readings_minimum - readings_margin, readings_maximum + readings_margin])
+            .range([h - bottom_paddings, top_height]);
 
-    <body>
-        <div class="ui top fixed menu">
-            <div class="item">
-                <img src="/images/logo.png">
-            </div>
-            <a class="item">Features</a>
-            <a class="item">Testimonials</a>
-            <a class="item">Sign-in</a>
-        </div>
-        <div class="ui container">
-            <h2 class="ui center aligned icon header" id="center-message">
-                <i class="bar chart icon"></i>
-                <div class="content">
-                        PM 2.5 Forecast for
-                    <div class="sub header">{{station_id}}</div>
-                </div>
-            </h2>
-            <svg>
-                <defs>
-                    <filter id="f1" x="-1" y="-1" width="300%" height="300%">
-                        <feOffset result="offOut" in="SourceGraphic" dx="0" dy="1" />
-                        <feColorMatrix result="matrixOut" in="offOut" type="matrix"
-                        values="0.7 0 0 0 0 0 0.7 0 0 0 0 0 0.7 0 0 0 0 0 1 0" />
-                        <feGaussianBlur result="blurOut" in="matrixOut" stdDeviation="1" />
-                        <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-                    </filter>
-                </defs>
-            </svg>
-            <div class="ui divider" id="footer-divider"></div>
-            <img class="ui centered image tiny emblem" src="{% static "academia-sinica-desaturated.png" %}" alt="Academia_Sinica_Emblem">
-            <div id="footer-word">Powered by d3js, semantic ui</div>
-        </div>
-        <script type="text/javascript">
+        var timestamp_maximum = d3.max(dataset, function(d) {
+            return d.timestamp;
+        })
+        var timestamp_minimum = d3.min(dataset, function(d) {
+            return d.timestamp;
+        })
 
-            var parseTime = d3.timeParse("%Y%m%d%H");
+        var duration = moment.duration((timestamp_maximum - timestamp_minimum) / 15);
+        
+        var time_scale = d3.scaleTime()
+            .domain([
+                moment(timestamp_minimum).subtract(duration),
+                moment(timestamp_maximum).add(duration)
+            ])
+            .range([left_paddings, w - right_paddings]);
 
-            var rowConverter = function(d) {
-                return {
-                    timestamp: parseTime(d.TIMESTAMP),
-                    readings: Math.floor(parseFloat(d.READING))
-                }
+
+        /* Grid Line*/
+        // gridlines in x axis function
+        function make_x_gridlines() {		
+            return d3.axisBottom(time_scale)
+                .ticks(15)
+        }
+
+        // gridlines in y axis function
+        function make_y_gridlines() {		
+            return d3.axisLeft(yscale)
+                .ticks(6)
+        }
+        
+        // add the X gridlines
+        d3.select("svg").append("g")			
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + (h - bottom_paddings) + ")")
+            .call(make_x_gridlines()
+                .tickSize(-(h - top_height))
+                .tickFormat("")
+            )
+        // add the Y gridlines
+        d3.select("svg").append("g")			
+            .attr("class", "grid")
+            .attr("transform", "translate(" + (left_paddings - 5) + ", 0)")
+            .call(make_y_gridlines()
+                .tickSize(-(w - right_paddings - right_paddings))
+                .tickFormat("")
+            )
+
+        
+        /* Data Point */
+        d3.select("svg")
+            .attr("width", w)
+            .attr("height", h)
+            .selectAll("circle")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("class", "point")
+            .attr("cx", function(d, i) { return time_scale(d.timestamp);})
+            .attr("cy", function(d, i) { return yscale(d.readings);})
+            .attr("r", 5);
+
+        var readings = dataset.map(i => i.readings);
+
+        /* Calculate meters y position */
+        var position = [];
+
+        var ggg = dataset.map(i => time_scale(i.timestamp))
+        var point_width = ggg[1] - ggg[0]
+
+        var seperation = 170
+        var vertical_minimum = 100
+
+        var previous = yscale(readings[0]) - meter_radius - vertical_length
+
+        var position = [];
+        position.push(previous);
+        for (i = 1; i < readings.length; i++) {
+            var deviation = Math.sqrt(seperation * seperation - point_width * point_width)
+            var higher = previous - deviation
+            var lower = previous + deviation
+
+            var lower_bound = yscale(readings[i]) - meter_radius - vertical_minimum
+            var higher_bound = meter_radius
+
+            var current = yscale(readings[i]) - meter_radius - vertical_length
+            var isCurrentOK = ((current - previous) * (current - previous) + point_width * point_width) >= seperation * seperation
+
+            if (isCurrentOK) {
+                position.push(current)
+                previous = current
+            } else if (lower < lower_bound && higher_bound < lower) {
+                position.push(lower)
+                previous = lower
+            } else {
+                position.push(higher)
+                previous = higher
             }
+        }
 
-            var w = 1020;
-            var h = 700;
-            var left_paddings = 40;
-            var right_paddings = 40;
-            var bottom_paddings = 20;
-            var top_height = 400;
-            var chart_margin = 40;
-            var meter_radius = 75;
-            var meter_inner_diameter = 62;
-            var vertical_length = 150;
-            // green: rgb(0, 179, 134)
-            // yellow: rgb(255, 214, 51)
-
-            var colorPicker = function(readings) {
-                if (readings < 35) return "rgb(51, 153, 102)"
-                else if (readings >= 35 && readings < 53) return "rgb(255, 214, 51)"
-                else if (readings >= 53 && readings < 70) return "rgb(255, 92, 51)"
-                else return "rgb(102, 0, 204)"
-            }
-
-            var textSize = function(readings) {
-                var numberOfDigit = Math.floor(readings).toString().length
-                if (numberOfDigit == 1) return "65px"
-                else if (numberOfDigit == 2) return "50px"
-                else if (numberOfDigit == 3) return "40px"
-                else return "35px"
-            }
-
-            var textPositionAdjustment = function(readings) {
-                var numberOfDigit = Math.floor(readings).toString().length
-                if (numberOfDigit == 1) return 22
-                else if (numberOfDigit == 2) return 17
-                else if (numberOfDigit == 3) return 15
-                else return 14
-            }
-
-            
-            
-            d3.csv("{% static filename %}", rowConverter, function(dataset) {
-                
-                var readings_maximum = d3.max(dataset, function(d) {
-                    return d.readings;
-                })
-                var readings_minimum = d3.min(dataset, function(d) {
-                    return d.readings;
-                })
-                var readings_margin = (readings_maximum - readings_minimum) / 20;
-
-                /* The y scale for bottom chart */
-                var yscale = d3.scaleLinear()
-                    .domain([readings_minimum - readings_margin, readings_maximum + readings_margin])
-                    .range([h - bottom_paddings, top_height]);
-
-                var timestamp_maximum = d3.max(dataset, function(d) {
-                    return d.timestamp;
-                })
-                var timestamp_minimum = d3.min(dataset, function(d) {
-                    return d.timestamp;
-                })
-
-                var duration = moment.duration((timestamp_maximum - timestamp_minimum) / 15);
-                
-                var time_scale = d3.scaleTime()
-                    .domain([
-                        moment(timestamp_minimum).subtract(duration),
-                        moment(timestamp_maximum).add(duration)
-                    ])
-                    .range([left_paddings, w - right_paddings]);
+        /* Vertical line */
+        d3.select("svg")
+            .selectAll(".vertical")
+            .data(dataset)
+            .enter()
+            .append("line")
+            .attr("class", "vertical")
+            .attr("x1", function(d, i) { return time_scale(d.timestamp);})
+            .attr("y1", function(d, i) { return yscale(d.readings) - 8;})
+            .attr("x2", function(d, i) { return time_scale(d.timestamp);})
+            .attr("y2", function(d, i) { return position[i];})
+            .attr("style", function(d, i) { return "stroke:" + colorPicker(d.readings, i) + ";stroke-width:5";})
+            ;
 
 
-                /* Grid Line*/
-                // gridlines in x axis function
-                function make_x_gridlines() {		
-                    return d3.axisBottom(time_scale)
-                        .ticks(15)
-                }
+        /* Meter rim region */
+        d3.select("svg")
+            .selectAll(".meter-rim")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("class", ".meter-rim")
+            .attr("cx", function(d, i) { return time_scale(d.timestamp);})
+            .attr("cy", function(d, i) { return position[i];})
+            .attr("r", meter_radius)
+            .attr("style", function(d, i) {return "fill:" + colorPicker(d.readings, i);})
+            .attr("filter", "url(#f1)");
+        
+        d3.select("svg")
+            .selectAll(".meter-rim")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("class", ".meter-rim")
+            .attr("cx", function(d, i) { return time_scale(d.timestamp);})
+            .attr("cy", function(d, i) { return position[i];})
+            .attr("r", meter_radius - 10)
+            .attr("style", "fill:rgb(256,256,256);");
+        
+        /* Meter center region */
+        d3.select("svg")
+            .selectAll(".meter-center")
+            .data(dataset)
+            .enter()
+            .append("circle")
+            .attr("class", "meter-center")
+            .attr("cx", function(d, i) { return time_scale(d.timestamp);})
+            .attr("cy", function(d, i) { return position[i];})
+            .attr("r", meter_inner_diameter)
+            .attr("style", function(d, i) {return "fill:" + colorPicker(d.readings, i);})
+            .attr("filter", "url(#f1)");
 
-                // gridlines in y axis function
-                function make_y_gridlines() {		
-                    return d3.axisLeft(yscale)
-                        .ticks(6)
-                }
-                
-                // add the X gridlines
-                d3.select("svg").append("g")			
-                    .attr("class", "grid")
-                    .attr("transform", "translate(0," + (h - bottom_paddings) + ")")
-                    .call(make_x_gridlines()
-                        .tickSize(-(h - top_height))
-                        .tickFormat("")
-                    )
-                // add the Y gridlines
-                d3.select("svg").append("g")			
-                    .attr("class", "grid")
-                    .attr("transform", "translate(" + (left_paddings - 5) + ", 0)")
-                    .call(make_y_gridlines()
-                        .tickSize(-(w - right_paddings - right_paddings))
-                        .tickFormat("")
-                    )
+        /* Text */
+        d3.select("svg").selectAll(".meter-text")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .attr("class", "meter-text")
+            .attr("x", function(d, i) { return time_scale(d.timestamp);})
+            .attr("y", function(d, i) { return position[i] + textPositionAdjustment(d.readings);})
+            .attr("fill", "white")
+            .text( function (d) { return d.readings; })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d) {return textSize(d.readings);})
+            .attr("text-anchor", "middle");
 
-                
-                /* Data Point */
-                d3.select("svg")
-                    .attr("width", w)
-                    .attr("height", h)
-                    .selectAll("circle")
-                    .data(dataset)
-                    .enter()
-                    .append("circle")
-                    .attr("class", "point")
-                    .attr("cx", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("cy", function(d, i) { return yscale(d.readings);})
-                    .attr("r", 5);
-                    var readings = dataset.map(i => i.readings);
-
-                /* Calculate meters y position */
-                var position = [];
-
-                var ggg = dataset.map(i => time_scale(i.timestamp))
-                var point_width = ggg[1] - ggg[0]
-
-                var seperation = 170
-                var vertical_minimum = 100
-
-                var previous = yscale(readings[0]) - meter_radius - vertical_length
-
-                var position = [];
-                position.push(previous);
-                for (i = 1; i < readings.length; i++) {
-                    var deviation = Math.sqrt(seperation * seperation - point_width * point_width)
-                    var higher = previous - deviation
-                    var lower = previous + deviation
-
-                    var lower_bound = yscale(readings[i]) - meter_radius - vertical_minimum
-                    var higher_bound = meter_radius
-
-                    var current = yscale(readings[i]) - meter_radius - vertical_length
-                    var isCurrentOK = ((current - previous) * (current - previous) + point_width * point_width) >= seperation * seperation
-
-                    if (isCurrentOK) {
-                        position.push(current)
-                        previous = current
-                    } else if (lower < lower_bound && higher_bound < lower) {
-                        position.push(lower)
-                        previous = lower
-                    } else {
-                        position.push(higher)
-                        previous = higher
-                    }
-
-                }
-
-                /* Vertical line */
-                d3.select("svg")
-                    .selectAll(".vertical")
-                    .data(dataset)
-                    .enter()
-                    .append("line")
-                    .attr("class", "vertical")
-                    .attr("x1", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("y1", function(d, i) { return yscale(d.readings) - 8;})
-                    .attr("x2", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("y2", function(d, i) { return position[i];})
-                    .attr("style", function(d) { return "stroke:" + colorPicker(d.readings) + ";stroke-width:5";})
-                    ;
-
-
-                
-                /* Meter rim region */
-                d3.select("svg")
-                    .selectAll(".meter-rim")
-                    .data(dataset)
-                    .enter()
-                    .append("circle")
-                    .attr("class", ".meter-rim")
-                    .attr("cx", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("cy", function(d, i) { return position[i];})
-                    .attr("r", meter_radius)
-                    .attr("style", function(d) {return "fill:" + colorPicker(d.readings);})
-                    .attr("filter", "url(#f1)");
-                
-                d3.select("svg")
-                    .selectAll(".meter-rim")
-                    .data(dataset)
-                    .enter()
-                    .append("circle")
-                    .attr("class", ".meter-rim")
-                    .attr("cx", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("cy", function(d, i) { return position[i];})
-                    .attr("r", meter_radius - 10)
-                    .attr("style", "fill:rgb(256,256,256);");
-                
-                /* Meter center region */
-                d3.select("svg")
-                    .selectAll(".meter-center")
-                    .data(dataset)
-                    .enter()
-                    .append("circle")
-                    .attr("class", "meter-center")
-                    .attr("cx", function(d, i) { return time_scale(d.timestamp);})
-                    .attr("cy", function(d, i) { return position[i];})
-                    .attr("r", meter_inner_diameter)
-                    .attr("style", function(d) {return "fill:" + colorPicker(d.readings);})
-                    .attr("filter", "url(#f1)");
-
-                /* Text */
-                d3.select("svg").selectAll(".meter-text")
-                        .data(dataset)
-                        .enter()
-                        .append("text")
-                        .attr("class", "meter-text")
-                        .attr("x", function(d, i) { return time_scale(d.timestamp);})
-                        .attr("y", function(d, i) { return position[i] + textPositionAdjustment(d.readings);})
-                        .attr("fill", "white")
-                        .text( function (d) { return d.readings; })
-                        .attr("font-family", "sans-serif")
-                        .attr("font-size", function(d) {return textSize(d.readings);})
-                        .attr("text-anchor", "middle");
-
-                /* Text */
-                d3.select("svg").selectAll(".meter-unit")
-                        .data(dataset)
-                        .enter()
-                        .append("text")
-                        .attr("class", "meter-unit")
-                        .attr("x", function(d, i) { return time_scale(d.timestamp);})
-                        .attr("y", function(d, i) { return position[i] + 40;})
-                        .attr("fill", "white")
-                        .text("μg/㎥")
-                        .attr("font-family", "serif")
-                        .attr("font-size", "12px")
-                        .attr("text-anchor", "middle");
+        /* Text */
+        d3.select("svg").selectAll(".meter-unit")
+            .data(dataset)
+            .enter()
+            .append("text")
+            .attr("class", "meter-unit")
+            .attr("x", function(d, i) { return time_scale(d.timestamp);})
+            .attr("y", function(d, i) { return position[i] + 40;})
+            .attr("fill", "white")
+            .text("μg/㎥")
+            .attr("font-family", "serif")
+            .attr("font-size", "12px")
+            .attr("text-anchor", "middle");
 
 
 
-                /* Value Line*/
-                var valueline = d3.line()
-                    .x(function(d) { return time_scale(d.timestamp); })
-                    .y(function(d) { return yscale(d.readings); });
+        /* Value Line*/
+        var valueline = d3.line()
+            .x(function(d) { return time_scale(d.timestamp); })
+            .y(function(d) { return yscale(d.readings); });
 
-                d3.select("svg").append("path")
-                    .data([dataset])
-                    .attr("class", "line")
-                    .attr("d", valueline)
-                    .attr("fill", "none");
-                    //.attr("stroke", "gray");
+        d3.select("svg").append("path")
+            .data([dataset])
+            .attr("class", "line")
+            .attr("d", valueline)
+            .attr("fill", "none");
+            //.attr("stroke", "gray");
 
-                /* Axis */
-                var xAxis = d3.axisBottom(time_scale).tickSize(0).tickPadding(10);
-                d3.select("svg")
-                    .append("g")
-                    .attr("class", "axis")
-                    .attr("transform", "translate(0," + (h - bottom_paddings) + ")")
-                    .call(xAxis);
+        /* Axis */
+        var xAxis = d3.axisBottom(time_scale).tickSize(0).tickPadding(20);
+        d3.select("svg")
+            .append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate(0," + (h - bottom_paddings) + ")")
+            .call(xAxis);
 
-            
-            });
-        </script>
-    </body>
-</html>
+    
+    });
+    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnl0aGVtYXBjb2xsZWN0b3IiLCJhIjoiY2phNjg4NGZjM2plajJxbDc3emgxNXd5bCJ9.0YwLUH-n_PyboM3gTZtTeg';
+    var map = new mapboxgl.Map({
+        container: 'map',
+        style: 'mapbox://styles/mapbox/streets-v10',
+        center: [{{lon}}, {{lat}}],
+        zoom: 10
+    });
+
+    var popup1 = new mapboxgl.Popup({closeButton: false})
+        .setLngLat([{{lon}}, {{lat}}])
+        .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: {{lat}}</div><div class="item">Longitude: {{lon}}</div></div>')
+        .addTo(map);
+
+    var el = document.createElement('img');
+    el.className = 'marker';
+    el.src = "{% static "cpu_fan-512.png" %}"
+    el.style.width = '26px';
+    el.style.height = '26px';
+
+    var marker = new mapboxgl.Marker(el, {offset:[0, 9]})
+        .setLngLat([{{lon}}, {{lat}}]) 
+        .addTo(map);
+</script>
+{% endblock %}

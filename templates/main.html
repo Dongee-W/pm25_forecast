@@ -1,0 +1,405 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Performance evaluation{% endblock %}
+
+{% block local_import %}
+<link rel="stylesheet" href="{% static "css/main.css" %}">
+{% endblock %}
+
+{% block content %}
+<h2 class="ui center aligned icon header" id="center-message">
+    <i class="newspaper icon"></i>
+    <div class="content">
+            PM 2.5 Forecast Service
+        <div class="sub header">an AirBox project</div>
+    </div>
+</h2>
+<div class="ui horizontal divider">
+    Mahajan Model
+  </div>
+<div class="ui five cards" id="numbers">
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                One-hour error
+                </div>
+                <div class="value">
+                {{medianErrorM_1}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                Two-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorM_2}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Three-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorM_3}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Four-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorM_4}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Five-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorM_5}}%
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="ui horizontal divider">
+    Yang Model
+  </div>
+<div class="ui five cards" id="numbers">
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                One-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorY_1}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                Two-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorY_2}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Three-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorY_3}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Four-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorY_4}}%
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="card">
+        <div class="content centered card-text">
+            <div class="ui statistic">
+                <div class="label">
+                    Five-hour error
+                </div>
+                <div class="value">
+                    {{medianErrorY_5}}%
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="ui equal width grid">
+    <div class="equal width row">
+        <div class="column" id="one-hour"></div>
+        <div class="column" id="two-hour"></div>
+        <div class="column" id="three-hour"></div>
+        <div class="column" id="four-hour"></div>
+        <div class="column" id="five-hour"></div>
+    </div>
+  </div>
+
+
+<div class="ui cards" id="gotooverview">
+    <div class="card">
+      <div class="content">
+        <div class="header">Mahajan Model</div>
+        <div class="description">
+          Elliot Fu is a film-maker from New York.
+        </div>
+      </div>
+      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/0';">
+        <div class="visible content">Go to model overview</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="content">
+        <div class="header">Yang Model</div>
+        <div class="description">
+          Veronika Ossi is a set designer living in New York who enjoys kittens, music, and partying.
+        </div>
+      </div>
+      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/1'">
+        <div class="visible content">Go to model overview</div>
+        <div class="hidden content">
+          <i class="right arrow icon"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script type="text/javascript">
+            Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
+
+        function unpack(rows, key) {
+        return rows.map(function(row) { return row[key]; });
+        }
+
+        
+
+
+        var oneY = {
+            x: {{xaxis}},
+            y: {{dataStringY_1}},
+            name: 'Yang',
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var oneM = {
+            x: {{xaxis}},
+            y: {{dataStringM_1}},
+            name: 'Mahajan',
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var twoY = {
+            x: {{xaxis}},
+            y: {{dataStringY_2}},
+            name: 'Yang',
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var twoM = {
+            x: {{xaxis}},
+            y: {{dataStringM_2}},
+            name: 'Mahajan',
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var threeY = {
+            x: {{xaxis}},
+            y: {{dataStringY_4}},
+            name: 'Yang',
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var threeM = {
+            x: {{xaxis}},
+            y: {{dataStringM_3}},
+            name: 'Mahajan',
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var fourY = {
+            x: {{xaxis}},
+            y: {{dataStringY_4}},
+            name: 'Yang',
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var fourM = {
+            x: {{xaxis}},
+            y: {{dataStringM_4}},
+            name: 'Mahajan',
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var fiveY = {
+            x: {{xaxis}},
+            y: {{dataStringY_5}},
+            name: 'Yang',
+            type: 'scatter',
+            line: {color: 'rgb(255, 214, 51)'}
+        };
+
+        var fiveM = {
+            x: {{xaxis}},
+            y: {{dataStringM_5}},
+            name: 'Mahajan',
+            type: 'scatter',
+            line: {color: 'rgb(51, 153, 102)'}
+        };
+
+        var CDF_One = [oneY, oneM];
+        var CDF_Two = [twoY, twoM];
+        var CDF_Three = [threeY, threeM];
+        var CDF_Four = [fourY, fourM];
+        var CDF_Five = [fiveY, fiveM];
+
+
+        var CDFlayout1 = {
+            title: 'One-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.2
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+            xaxis: {
+                title: 'Relative Error',
+                titlefont: {
+                size: 12,
+                },
+                zeroline: false,
+            },
+        };
+        var CDFlayout2 = {
+            title: 'Two-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.2
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+            xaxis: {
+                title: 'Relative Error',
+                titlefont: {
+                size: 12,
+                },
+                zeroline: false,
+            },
+        };
+        var CDFlayout3 = {
+            title: 'Three-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.2
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+            xaxis: {
+                title: 'Relative Error',
+                titlefont: {
+                size: 12,
+                },
+                zeroline: false,
+            },
+        };
+        var CDFlayout4 = {
+            title: 'Four-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.2
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+            xaxis: {
+                title: 'Relative Error',
+                titlefont: {
+                size: 12,
+                },
+                zeroline: false,
+            },
+        };
+        var CDFlayout5 = {
+            title: 'Five-hour CDF',
+            autosize: true,
+            legend: {
+                x: 0,
+                y: 1.2
+            },
+            height: 350,
+            margin: {
+                l: 20,
+                r: 20,
+                b: 30,
+                pad: 0
+            },
+            xaxis: {
+                title: 'Relative Error',
+                titlefont: {
+                size: 12,
+                },
+                zeroline: false,
+            },
+        };
+        Plotly.newPlot('one-hour', CDF_One, CDFlayout1,{displayModeBar: false});
+        Plotly.newPlot('two-hour', CDF_Two, CDFlayout2, {displayModeBar: false});
+        Plotly.newPlot('three-hour', CDF_Three, CDFlayout3, {displayModeBar: false});
+        Plotly.newPlot('four-hour', CDF_Four, CDFlayout4, {displayModeBar: false});
+        Plotly.newPlot('five-hour', CDF_Five, CDFlayout5, {displayModeBar: false});
+        })
+</script>
+{% endblock %}
