@@ -46,7 +46,7 @@ def overview(request, model_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
+    cnx = mysql.connector.connect(user='pm25_forecast', password='nrl619', host='127.0.0.1', database='FORECAST')
     cursor = cnx.cursor()
     queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
     cursor.execute(queryLeft, (dateString, hourString, str(model_id)))
@@ -125,7 +125,7 @@ def forecast(request, station_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
+    cnx = mysql.connector.connect(user='pm25_forecast',password='nrl619', host='127.0.0.1',database='FORECAST')
     cursor = cnx.cursor()
 
     query = "select ID, LATITUDE, LONGTITUDE from gps where ID = %s"
@@ -248,7 +248,7 @@ def main(request):
         statistics_1_5 =content[20]
     else:
         import mysql.connector
-        cnx = mysql.connector.connect(user='root', password='360iisnrl', host='127.0.0.1', database='pm25_forecast')
+        cnx = mysql.connector.connect(user='pm25_forecast',password='nrl619', host='127.0.0.1',database='FORECAST')
         cursor = cnx.cursor()
         query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
