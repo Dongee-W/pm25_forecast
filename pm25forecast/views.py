@@ -140,7 +140,8 @@ def forecast(request, station_id):
         latitude = str(float(gps[0]['LATITUDE']))
         longtitude = str(float(gps[0]['LONGTITUDE']))
     except:
-        print("Getting lat, lon failed.")
+        latitude = "Latitude not available"
+        longtitude = "Longtitude not available"
         
 
     query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
