@@ -300,27 +300,34 @@
 
     
     });
-    mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnl0aGVtYXBjb2xsZWN0b3IiLCJhIjoiY2phNjg4NGZjM2plajJxbDc3emgxNXd5bCJ9.0YwLUH-n_PyboM3gTZtTeg';
-    var map = new mapboxgl.Map({
-        container: 'map',
-        style: 'mapbox://styles/mapbox/streets-v10',
-        center: [{{lon}}, {{lat}}],
-        zoom: 10
-    });
 
-    var popup1 = new mapboxgl.Popup({closeButton: false})
-        .setLngLat([{{lon}}, {{lat}}])
-        .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: {{lat}}</div><div class="item">Longitude: {{lon}}</div></div>')
-        .addTo(map);
+    var lont = parseFloat({{lon}})
+    var lati = parseFloat({{lat}})
 
-    var el = document.createElement('img');
-    el.className = 'marker';
-    el.src = "{% static "cpu_fan-512.png" %}"
-    el.style.width = '26px';
-    el.style.height = '26px';
+    if (!isNaN(lont) && !isNaN(lati)) {
+        mapboxgl.accessToken = 'pk.eyJ1IjoiaGFycnl0aGVtYXBjb2xsZWN0b3IiLCJhIjoiY2phNjg4NGZjM2plajJxbDc3emgxNXd5bCJ9.0YwLUH-n_PyboM3gTZtTeg';
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v10',
+            center: [lont, lati],
+            zoom: 10
+        });
 
-    var marker = new mapboxgl.Marker(el, {offset:[0, 9]})
-        .setLngLat([{{lon}}, {{lat}}]) 
-        .addTo(map);
+        var popup1 = new mapboxgl.Popup({closeButton: false})
+            .setLngLat([lont, lati])
+            .setHTML('<div class="ui large list"><div class="item"><i class="world icon"></i>Sensor location</div><div class="item">Latitude: {{lat}}</div><div class="item">Longitude: {{lon}}</div></div>')
+            .addTo(map);
+
+        var el = document.createElement('img');
+        el.className = 'marker';
+        el.src = "{% static "cpu_fan-512.png" %}"
+        el.style.width = '26px';
+        el.style.height = '26px';
+
+        var marker = new mapboxgl.Marker(el, {offset:[0, 9]})
+            .setLngLat([lont, lati]) 
+            .addTo(map);
+    }
+
 </script>
 {% endblock %}
