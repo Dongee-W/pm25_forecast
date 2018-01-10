@@ -47,8 +47,17 @@
             {% block content %}{% endblock %}
             
             <div class="ui divider" id="footer-divider"></div>
-            <img class="ui centered image tiny emblem" src="{% static "academia-sinica-desaturated.png" %}" alt="Academia_Sinica_Emblem">
-            <div id="footer-word">This service is experimental and is not intended to be a subsitute for the government's own forecast service.</div>
+            <div class="ui grid">
+                <div class="five wide column" >
+                    <a class="ui image label" id="emblem">
+                        <img src="{% static "academia-sinica-desaturated.png" %}">
+                        LASS/Academia Sinica
+                    </a>
+                </div>
+                <div class="ten wide column">
+                    <div id="footer-word">This service is experimental and is not intended to be a subsitute for the government's own forecast service.</div>
+                </div> 
+            </div>
         </div>
     </body>
 </html>
