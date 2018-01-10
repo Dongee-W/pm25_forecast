@@ -1,3 +1,7 @@
 #emblem {
   float: right;
 }
+
+#footer-message {
+  margin-bottom: 60px;
+}
