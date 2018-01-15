@@ -33,9 +33,10 @@ def overview(request, model_id):
 
     lastest_file = Path(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"))
 
-    if lastest_file.is_file():
-        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
-        return render(request, 'overview.html', context)
+    # This is for performance, but this will not get updated once the file is created.
+    #if lastest_file.is_file():
+    #    context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
+    #    return render(request, 'overview.html', context)
 
     # parameters for testing
     '''
