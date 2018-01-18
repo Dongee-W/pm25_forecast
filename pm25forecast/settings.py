@@ -27,7 +27,7 @@ DEBUG = True
 
 TEMPLATE_DEBUG = True
 
-ALLOWED_HOSTS = ['172.16.3.99','hello.com', 'localhost', 'airbox-bot.lass-net.org']
+ALLOWED_HOSTS = ['172.16.3.99','hello.com', 'localhost', 'airbox-bot.lass-net.org', 'pm25next.lass-net.org']
 
 
 # Application definition
