@@ -9,6 +9,8 @@ from pathlib import Path
 import pandas as pd
 import numpy as np
 
+import config
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def index(request):
@@ -47,7 +49,7 @@ def overview(request, model_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='pm25_forecast', password='nrl619', host='127.0.0.1', database='FORECAST')
+    cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
     queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
     cursor.execute(queryLeft, (dateString, hourString, str(model_id)))
@@ -127,7 +129,7 @@ def forecast(request, station_id):
     # parameters end ...
 
     import mysql.connector
-    cnx = mysql.connector.connect(user='pm25_forecast',password='nrl619', host='127.0.0.1',database='FORECAST')
+    cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
 
     query = "select ID, LATITUDE, LONGTITUDE from gps where ID = %s"
@@ -295,7 +297,7 @@ def main(request):
         statistics_1_5 =content[20]
     else:
         import mysql.connector
-        cnx = mysql.connector.connect(user='pm25_forecast',password='nrl619', host='127.0.0.1',database='FORECAST')
+        cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
         cursor = cnx.cursor()
         query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
