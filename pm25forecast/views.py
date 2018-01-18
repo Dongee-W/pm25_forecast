@@ -15,7 +15,7 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 def overview_test(request):
-    context = {'filename': "overview_2017112707.csv"}
+    context = {'filename': "overview_2018011719_0.csv", 'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM"}
     return render(request, 'overview.html', context)
 
 def overview(request, model_id):
@@ -103,10 +103,11 @@ def overview(request, model_id):
         return render(request, 'overview.html', context)
     
 
-
-
+'''
+forecast_test is for the demonstration purpose.
+'''
 def forecast_test(request):
-    context = {'station_id': "WF_3977799", 'filename': "1421GE.csv"}
+    context = {'station_id': "WF_3977799", 'filename': "1421GE.csv", 'lastUpdate': "2018-01-18 09AM", 'lat': "23.97571", 'lon': "120.704944"}
     return render(request, 'forecast-page.html', context)
 
 def forecast(request, station_id):
@@ -209,12 +210,52 @@ def forecast(request, station_id):
     cursor.close()
     cnx.close()
 
-        
-
+'''
+main_test is for the demonstration purpose.
+'''
 def main_test(request):
-    context = {'xaxis': "[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]", 'dataStringM_1': "[10, 9.2, 9.0, 7.9, 7.5, 4,  3, 2, 1, 0]", 'dataStringY_1': "[10, 9.6, 9.3, 8.9, 7.5, 4,  3, 2, 1, 0]"}
+    with open(os.path.join(BASE_DIR, "static/main_2018011720.txt")) as f:
+        content = f.readlines()
+        content = [x.strip() for x in content]
+
+        xaxis = content[0]
+        dataStringM_1 = content[1]
+        dataStringY_1 = content[2]
+        dataStringM_2 = content[3]
+        dataStringY_2 = content[4]
+        dataStringM_3 = content[5] 
+        dataStringY_3 = content[6] 
+        dataStringM_4 = content[7] 
+        dataStringY_4 = content[8] 
+        dataStringM_5 = content[9] 
+        dataStringY_5 = content[10]
+        statistics_0_1 = content[11]
+        statistics_0_2 = content[12]
+        statistics_0_3 = content[13]
+        statistics_0_4 = content[14]
+        statistics_0_5 = content[15]
+        statistics_1_1 = content[16]
+        statistics_1_2 = content[17]
+        statistics_1_3 = content[18]
+        statistics_1_4 = content[19]
+        statistics_1_5 =content[20]
+
+    context = {'xaxis': xaxis, 'dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
+    'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
+    'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
+    'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
+    'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5,
+    'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+    'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
+    'medianErrorM_5': statistics_0_5, 'medianErrorY_1': statistics_1_1,
+    'medianErrorY_2': statistics_1_2, 'medianErrorY_3': statistics_1_3,
+    'medianErrorY_4': statistics_1_4, 'medianErrorY_5': statistics_1_5
+    }
     return render(request, 'main.html', context)
 
+'''
+main is the function for main page.
+'''
 def main(request):
 
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
