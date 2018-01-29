@@ -17,7 +17,7 @@ def index(request):
     return HttpResponse("Hello, world. You're at the polls index.")
 
 def overview_test(request):
-    context = {'filename': "overview_2018011719_0.csv", 'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM"}
+    context = {'filename': "overview_2018011719_0.csv", 'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM", 'modelId': 1}
     return render(request, 'overview.html', context)
 
 def overview(request, model_id):
@@ -89,7 +89,7 @@ def overview(request, model_id):
         perfectTable['ID'] = perfectTable.index
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
+        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id}
         cursor.close()
         cnx.close()
         return render(request, 'overview.html', context)
@@ -415,3 +415,88 @@ def main(request):
 
 def idw_test(request):
     return render(request, 'idw.html')
+
+def idw(request, model_id):
+    '''
+    11 hours data including 6 hours of real value and 5 hours of prediction.
+    This piece of data is for the animation on the website.
+    '''
+
+    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    name=current.strftime('%Y%m%d%H')
+
+    dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
+    hourString = '{0:02d}'.format(current.hour)
+
+    # Produce timestamp
+    n = range(0, 6)
+    tsList = [current - datetime.timedelta(hours = d) for d in n]
+    dateList = np.array([str(ts.year) + '{0:02d}'.format(ts.month) + '{0:02d}'.format(ts.day) for ts in tsList])
+    hourList = np.array(['{0:02d}'.format(ts.hour) for ts in tsList])
+
+    dhList = list(zip(dateList, hourList))
+    conList = list(map(lambda x: "(DATE=\'" + str(x[0]) + "\' AND HOUR=\'" + str(x[1]) + "\')", dhList))
+    whereclause = " OR ".join(conList)
+
+    import mysql.connector
+    cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
+    cursor = cnx.cursor()
+    queryPastNow = "select ID, DATE, HOUR, READING from readings where " + whereclause
+    cursor.execute(queryPastNow)
+
+    leftHalfData= []
+    for (id, date, hour, reading) in cursor:
+        record = {"ID": id, "DATE": date, "HOUR": hour, "READING": float(reading)}
+        leftHalfData.append(record)
+
+    queryRight = "select ID, HOUR_AHEAD, PREDICTION from predictions where DATE = %s and HOUR = %s and MODEL = %s"
+    cursor.execute(queryRight, (dateString, hourString, str(model_id)))
+
+    rightHalfData= []
+    for (id, hour_ahead, prediction) in cursor:
+        record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
+        rightHalfData.append(record)
+
+    resultSetLeft = pd.DataFrame(leftHalfData)
+    resultSetRight = pd.DataFrame(rightHalfData)
+    resultSetLeft["TS"] = resultSetLeft["DATE"] + resultSetLeft["HOUR"]
+    leftHalfTable = resultSetLeft.drop(["DATE", "HOUR"], axis=1).pivot_table(values='READING',index=['ID'], columns=['TS'])
+    rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
+
+    rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
+
+    fullTable = pd.merge(leftHalfTable, rightHalfTable, how='inner', left_index=True, right_index=True)
+
+    query = "select ID, LATITUDE, LONGTITUDE from gps"
+    cursor.execute(query)
+    gps = []
+
+    for (id, lat, lon) in cursor:
+        try:
+            recordGPS = {"ID": id, "LATITUDE": float(lat), "LONGTITUDE": float(lon)}
+        except:
+            recordGPS = {"ID": id, "LATITUDE": np.nan, "LONGTITUDE": np.nan}
+        gps.append(recordGPS)
+    resultSetGPS = pd.DataFrame(gps).set_index('ID').dropna()
+
+    perfectTable = pd.merge(fullTable, resultSetGPS, how='inner', left_index=True, right_index=True)
+
+    outputReady = [list(zip(perfectTable[perfectTable.columns[-2]], 
+        perfectTable[perfectTable.columns[-1]],
+        perfectTable[perfectTable.columns[i]])) for  i in range(0, 11)]
+
+    outputString = "var PM25points = " + json.dumps(outputReady)
+
+    # Timestamp for ouput
+    tsOutput = [(current + datetime.timedelta(hours = d)).strftime('%Y-%m-%d %I%p') for d in range(-5,5)]
+    tsOutputString = "var timestamps = " + json.dumps(tsOutput)
+
+    filename = os.path.join(BASE_DIR, "static/animation_" + dateString + hourString + "_" + str(model_id) + ".js")
+
+    with open(filename, "w") as text_file:
+        text_file.write(outputString + "\n")
+        text_file.write(tsOutputString + "\n")
+
+    context = {'filename': filename}
+    
+    return render(request, 'idw.html', context)
