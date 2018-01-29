@@ -498,6 +498,6 @@ def idw(request, model_id):
         text_file.write(outputString + "\n")
         text_file.write(tsOutputString + "\n")
 
-    context = {'filename': filename}
+    context = {'filename': animation_" + dateString + hourString + "_" + str(model_id) + ".js"}
     
     return render(request, 'idw.html', context)
