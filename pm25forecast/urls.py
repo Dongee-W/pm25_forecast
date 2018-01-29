@@ -21,6 +21,7 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.main, name='main'),
     url(r'^overview-test/$', views.overview_test, name='overview_test'),
+    url(r'^idw-test/$', views.idw_test, name='idw_test'),
     url(r'^overview/(?P<model_id>[0-9]+)$', views.overview, name='overview'),
     url(r'^forecast-test/$', views.forecast_test, name='forecast_test'),
     url(r'^forecast/(?P<station_id>[a-zA-Z0-9\.\-\_]+)', views.forecast, name='forecast'),

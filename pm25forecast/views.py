@@ -412,3 +412,6 @@ def main(request):
     }
 
     return render(request, 'main.html', context)
+
+def idw_test(request):
+    return render(request, 'idw.html')

@@ -1,0 +1,182 @@
+{% load static %}
+<html>  
+    <head>
+        <title>LASS: IDW Diagram</title>
+        <meta charset="utf-8" />
+        <meta http-equiv="refresh" content="300">
+        <link href='https://api.tiles.mapbox.com/mapbox.js/v1.6.3/mapbox.css' rel='stylesheet' />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.css"/>
+        <link rel="stylesheet" href="{% static "css/idw.css" %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+        
+        
+        <style>
+            body {
+                padding: 0;
+                margin: 0;
+            }
+            html, body, #map {
+                height: 100%;
+                width: 100%;
+            }
+    
+        #p_time {
+                    position:absolute;
+                    background-color: #FFF;
+                    opacity: 1;
+                    border-radius: 2px;
+                    padding: 5px 5px 5px 5px;
+              right:5px;
+              top:5px;
+        }
+    
+            #about {
+                    position:absolute;
+                    background-color: #FFF;
+                    opacity: 0.8;
+                    border-radius: 1px;
+                    padding: 1px 1px 1px 1px;
+                    left:4px;
+                    bottom:4px;
+            }
+        </style>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.0.0-beta.2/leaflet.js"> </script>
+        <script src="https://api.tiles.mapbox.com/mapbox.js/v2.2.1/mapbox.js"></script>
+        <script src="{% static "leaflet-idw.js" %}"> </script>
+        <script src="{% static "animation_2018012516_1.js" %}"> </script>
+        <script src="{% static "emission.js" %}"> </script>
+        
+        
+        <script
+            src="https://code.jquery.com/jquery-3.3.1.min.js"
+            integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+            crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"> </script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <button class="ui icon button grey" id="playpause">
+            <i class="icon pause" id="buttonicon"></i>
+        </button>
+        <input type="range" id="sliderinput" value="0" min="0" max="10" step="1">
+        <div class="ui small label grey" id="label">
+                2018-01-24 10AM
+        </div>
+    </body>
+    
+        <script>
+        //Initiation 
+        var animationId = start();
+        $("#label").text(timestamps[0])
+        document.getElementById("sliderinput").value  = 0
+        $("#playpause").click(function(){
+            if($("#buttonicon").hasClass("play")) {
+                animationId = start();
+            } else {
+                stop(animationId);
+            }
+            $("#buttonicon").toggleClass("play");
+            $("#buttonicon").toggleClass("pause");
+            
+        });
+
+        L.mapbox.accessToken = 'pk.eyJ1IjoiY2NsbGpqIiwiYSI6ImNpazNha2tldjAzZW11bW0wZGFnbGZycDkifQ.PQAoezRAo4SkLQahj6F3oQ';
+        //L.mapbox.accessToken = $token;
+        map = L.mapbox.map('map', 'zetter.i73ka9hn',{attributionControl: false})
+           .setView([23.77, 120.88], 8);
+    
+    
+        var credits = L.control.attribution().addTo(map);
+        credits.addAttribution("© <a href='https://www.mapbox.com/map-feedback/'>Mapbox</a> " +
+                            "© <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> " +
+    //                        "© <a href='http://lass-net.org'>LASS</a> & <a href='https://sites.google.com/site/cclljj/NRL'>IIS-NRL</a>" +
+                            " | <a href='http://creativecommons.org/licenses/by-nc-sa/4.0/'>CC-BY-NC-SA</a>");
+    
+    
+        //map.options.minZoom = 6
+        map.options.maxZoom = 16
+    
+    
+        var idw = L.idwLayer(PM25points[0],{
+                opacity: 0.5,
+                maxZoom: 16,
+                minZoom: 8,
+                cellSize: 10,
+                exp: 2,
+                // max: 1000
+                max: 100 
+            }).addTo(map);
+    
+        var numEmission = EmissionPoints.length;
+        for (var i=0; i<numEmission; i++){
+            var gps_lat = EmissionPoints[i][0];
+            var gps_lon = EmissionPoints[i][1];
+            var description = EmissionPoints[i][2];
+    
+            var polygon = L.polygon([
+                    [gps_lat + 0.015, gps_lon],
+                    [gps_lat , gps_lon + 0.015],
+                    [gps_lat - 0.015, gps_lon],
+                    [gps_lat , gps_lon - 0.015]
+                    ],{
+                        color: '#0000ff',
+                        fillOpacity: 0.5,
+                        fillColor: '#00ccff',
+                    }).addTo(map)
+                    .bindPopup(description);
+        }
+
+        $("#sliderinput").on("change", function() {
+            console.log(document.getElementById("sliderinput").value)
+            $("#label").text(timestamps[document.getElementById("sliderinput").value])
+            map.removeLayer(map._layers[idw._leaflet_id]);
+            idw = L.idwLayer(PM25points[document.getElementById("sliderinput").value],{
+                opacity: 0.5,
+                maxZoom: 16,
+                minZoom: 8,
+                cellSize: 10,
+                exp: 2,
+                // max: 1000
+                max: 100 
+            }).addTo(map);
+        });
+
+        function start() {    
+            var i = parseInt(document.getElementById("sliderinput").value);
+            
+            var intervalId = setInterval(function(){ 
+                if (i < 10) {
+                    i += 1
+                    document.getElementById("sliderinput").value = i;
+                } else {
+                    i  = 0;
+                    document.getElementById("sliderinput").value = i;
+                };
+
+                $("#label").text(timestamps[document.getElementById("sliderinput").value])
+                map.removeLayer(map._layers[idw._leaflet_id]);
+                idw = L.idwLayer(PM25points[document.getElementById("sliderinput").value],{
+                    opacity: 0.5,
+                    maxZoom: 16,
+                    minZoom: 8,
+                    cellSize: 10,
+                    exp: 2,
+                    // max: 1000
+                    max: 100 
+                }).addTo(map);
+
+            }, 300);
+            return intervalId
+        }
+
+        function stop(animationId) {
+            clearInterval(animationId)
+        }
+
+               
+        </script>   
+    
+        <script src="{% static "idw-legend.js" %}"> </script>
+    </html>
+    
