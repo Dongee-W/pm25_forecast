@@ -287,7 +287,7 @@
 
 
         var CDFlayout1 = {
-            title: 'One-hour CDF',
+            title: 'One-hour',
             autosize: true,
             legend: {
                 x: 0,
@@ -295,8 +295,8 @@
             },
             height: 350,
             margin: {
-                l: 20,
-                r: 20,
+                l: 33,
+                r: 33,
                 b: 30,
                 pad: 0
             },
@@ -307,9 +307,15 @@
                 },
                 zeroline: false,
             },
+            yaxis: {
+                title: 'CDF',
+                titlefont: {
+                size: 12,
+                },
+            }
         };
         var CDFlayout2 = {
-            title: 'Two-hour CDF',
+            title: 'Two-hour',
             autosize: true,
             legend: {
                 x: 0,
@@ -317,8 +323,8 @@
             },
             height: 350,
             margin: {
-                l: 20,
-                r: 20,
+                l: 33,
+                r: 33,
                 b: 30,
                 pad: 0
             },
@@ -329,9 +335,15 @@
                 },
                 zeroline: false,
             },
+            yaxis: {
+                title: 'CDF',
+                titlefont: {
+                size: 12,
+                },
+            }
         };
         var CDFlayout3 = {
-            title: 'Three-hour CDF',
+            title: 'Three-hour',
             autosize: true,
             legend: {
                 x: 0,
@@ -339,8 +351,8 @@
             },
             height: 350,
             margin: {
-                l: 20,
-                r: 20,
+                l: 33,
+                r: 33,
                 b: 30,
                 pad: 0
             },
@@ -351,9 +363,15 @@
                 },
                 zeroline: false,
             },
+            yaxis: {
+                title: 'CDF',
+                titlefont: {
+                size: 12,
+                },
+            }
         };
         var CDFlayout4 = {
-            title: 'Four-hour CDF',
+            title: 'Four-hour',
             autosize: true,
             legend: {
                 x: 0,
@@ -361,8 +379,8 @@
             },
             height: 350,
             margin: {
-                l: 20,
-                r: 20,
+                l: 33,
+                r: 33,
                 b: 30,
                 pad: 0
             },
@@ -373,9 +391,16 @@
                 },
                 zeroline: false,
             },
+            yaxis: {
+                title: 'CDF',
+                titlefont: {
+                size: 12,
+                },
+            }
+            
         };
         var CDFlayout5 = {
-            title: 'Five-hour CDF',
+            title: 'Five-hour',
             autosize: true,
             legend: {
                 x: 0,
@@ -383,8 +408,8 @@
             },
             height: 350,
             margin: {
-                l: 20,
-                r: 20,
+                l: 33,
+                r: 33,
                 b: 30,
                 pad: 0
             },
@@ -395,12 +420,19 @@
                 },
                 zeroline: false,
             },
+            yaxis: {
+                title: 'CDF',
+                titlefont: {
+                size: 12,
+                },
+            }
         };
         Plotly.newPlot('one-hour', CDF_One, CDFlayout1,{displayModeBar: false});
         Plotly.newPlot('two-hour', CDF_Two, CDFlayout2, {displayModeBar: false});
         Plotly.newPlot('three-hour', CDF_Three, CDFlayout3, {displayModeBar: false});
         Plotly.newPlot('four-hour', CDF_Four, CDFlayout4, {displayModeBar: false});
         Plotly.newPlot('five-hour', CDF_Five, CDFlayout5, {displayModeBar: false});
+        $(".g-ytitle").attr("transform", "translate(10,0)");
         })
 </script>
 {% endblock %}
