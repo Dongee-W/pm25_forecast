@@ -302,7 +302,7 @@ def main(request):
         cursor = cnx.cursor()
         query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
-        outOfDate = current + datetime.timedelta(days=-3)
+        outOfDate = current + datetime.timedelta(days=-15)
         outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
         cursor.execute(query, outOfDateString)
