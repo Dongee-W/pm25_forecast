@@ -490,7 +490,7 @@ def idw(request, model_id):
         outputString = "var PM25points = " + json.dumps(outputReady)
 
         # Timestamp for ouput
-        tsOutput = [(current + datetime.timedelta(hours = d)).strftime('%Y-%m-%d %I%p') for d in range(-5,5)]
+        tsOutput = [(current + datetime.timedelta(hours = d)).strftime('%Y-%m-%d %I%p') for d in range(-5,6)]
         tsOutputString = "var timestamps = " + json.dumps(tsOutput)
 
         filename = os.path.join(BASE_DIR, "static/animation_" + dateString + hourString + "_" + str(model_id) + ".js")
