@@ -458,46 +458,56 @@ def idw(request, model_id):
         record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
         rightHalfData.append(record)
 
-    resultSetLeft = pd.DataFrame(leftHalfData)
-    resultSetRight = pd.DataFrame(rightHalfData)
-    resultSetLeft["TS"] = resultSetLeft["DATE"] + resultSetLeft["HOUR"]
-    leftHalfTable = resultSetLeft.drop(["DATE", "HOUR"], axis=1).pivot_table(values='READING',index=['ID'], columns=['TS'])
-    rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
+    if len(leftHalfData) > 0 and len(rightHalfData) > 0:
+        resultSetLeft = pd.DataFrame(leftHalfData)
+        resultSetRight = pd.DataFrame(rightHalfData)
+        resultSetLeft["TS"] = resultSetLeft["DATE"] + resultSetLeft["HOUR"]
+        leftHalfTable = resultSetLeft.drop(["DATE", "HOUR"], axis=1).pivot_table(values='READING',index=['ID'], columns=['TS'])
+        rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
 
-    rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
+        rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
 
-    fullTable = pd.merge(leftHalfTable, rightHalfTable, how='inner', left_index=True, right_index=True)
+        fullTable = pd.merge(leftHalfTable, rightHalfTable, how='inner', left_index=True, right_index=True)
 
-    query = "select ID, LATITUDE, LONGTITUDE from gps"
-    cursor.execute(query)
-    gps = []
+        query = "select ID, LATITUDE, LONGTITUDE from gps"
+        cursor.execute(query)
+        gps = []
 
-    for (id, lat, lon) in cursor:
-        try:
-            recordGPS = {"ID": id, "LATITUDE": float(lat), "LONGTITUDE": float(lon)}
-        except:
-            recordGPS = {"ID": id, "LATITUDE": np.nan, "LONGTITUDE": np.nan}
-        gps.append(recordGPS)
-    resultSetGPS = pd.DataFrame(gps).set_index('ID').dropna()
+        for (id, lat, lon) in cursor:
+            try:
+                recordGPS = {"ID": id, "LATITUDE": float(lat), "LONGTITUDE": float(lon)}
+            except:
+                recordGPS = {"ID": id, "LATITUDE": np.nan, "LONGTITUDE": np.nan}
+            gps.append(recordGPS)
+        resultSetGPS = pd.DataFrame(gps).set_index('ID').dropna()
 
-    perfectTable = pd.merge(fullTable, resultSetGPS, how='inner', left_index=True, right_index=True)
+        perfectTable = pd.merge(fullTable, resultSetGPS, how='inner', left_index=True, right_index=True)
 
-    outputReady = [list(zip(perfectTable[perfectTable.columns[-2]], 
-        perfectTable[perfectTable.columns[-1]],
-        perfectTable[perfectTable.columns[i]])) for  i in range(0, 11)]
+        outputReady = [list(zip(perfectTable[perfectTable.columns[-2]], 
+            perfectTable[perfectTable.columns[-1]],
+            perfectTable[perfectTable.columns[i]])) for  i in range(0, 11)]
 
-    outputString = "var PM25points = " + json.dumps(outputReady)
+        outputString = "var PM25points = " + json.dumps(outputReady)
 
-    # Timestamp for ouput
-    tsOutput = [(current + datetime.timedelta(hours = d)).strftime('%Y-%m-%d %I%p') for d in range(-5,5)]
-    tsOutputString = "var timestamps = " + json.dumps(tsOutput)
+        # Timestamp for ouput
+        tsOutput = [(current + datetime.timedelta(hours = d)).strftime('%Y-%m-%d %I%p') for d in range(-5,5)]
+        tsOutputString = "var timestamps = " + json.dumps(tsOutput)
 
-    filename = os.path.join(BASE_DIR, "static/animation_" + dateString + hourString + "_" + str(model_id) + ".js")
+        filename = os.path.join(BASE_DIR, "static/animation_" + dateString + hourString + "_" + str(model_id) + ".js")
 
-    with open(filename, "w") as text_file:
-        text_file.write(outputString + "\n")
-        text_file.write(tsOutputString + "\n")
+        with open(filename, "w") as text_file:
+            text_file.write(outputString + "\n")
+            text_file.write(tsOutputString + "\n")
 
-    context = {'filename': "animation_" + dateString + hourString + "_" + str(model_id) + ".js"}
-    
+        context = {'filename': "animation_" + dateString + hourString + "_" + str(model_id) + ".js"}
+    else:
+        adjusted = current - datetime.timedelta(hours = 1)
+        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
+
+        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
+        adjustHourString = '{0:02d}'.format(adjusted.hour)
+        context = {'filename': ("animation_" + adjustDateString + adjustHourString + "_" + str(model_id) + ".js")}
+
+    cursor.close()
+    cnx.close()
     return render(request, 'idw.html', context)
