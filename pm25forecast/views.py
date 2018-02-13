@@ -536,8 +536,7 @@ def epamain(request):
         record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
         data.append(record)
     
-    cursor.close()
-    cnx.close()
+    
 
     table = pd.DataFrame(data)
     table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
@@ -594,11 +593,8 @@ def epamain(request):
         context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
             'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
             'medianErrorM_5': statistics_0_5}
-        cursor.close()
-        cnx.close()
-        return render(request, 'overview.html', context)
-    else:
         
+    else:
         adjusted = current - datetime.timedelta(hours = 1)
         adjustName=adjusted.strftime('%Y-%m-%d %I%p')
 
@@ -607,5 +603,8 @@ def epamain(request):
         context = {'filename': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
             'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
             'medianErrorM_5': statistics_0_5}
+
+    cursor.close()
+    cnx.close()
 
     return render(request, 'epa-main.html', context)
