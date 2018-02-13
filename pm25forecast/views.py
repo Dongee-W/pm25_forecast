@@ -549,7 +549,7 @@ def epamain(request):
     statistics_0_4 = str(int(round(medianError[6][4]*100)))
     statistics_0_5 = str(int(round(medianError[6][5]*100)))
 
-    model_id = 6
+    model_id = "6"
     modelName = "Mahajan"
 
     queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
