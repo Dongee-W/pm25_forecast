@@ -19,7 +19,9 @@ from . import views
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', views.main, name='main'),
+    url(r'^$', views.index, name='index'),
+    url(r'^abmain', views.abmain, name='abmain'),
+    url(r'^epamain', views.epamain, name='epamain'),
     url(r'^overview-test/$', views.overview_test, name='overview_test'),
     url(r'^idw-test/$', views.idw_test, name='idw_test'),
     url(r'^idw/(?P<model_id>[0-9]+)$', views.idw, name='idw'),

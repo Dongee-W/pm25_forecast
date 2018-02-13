@@ -259,7 +259,7 @@ def main_test(request):
 '''
 main is the function for main page.
 '''
-def main(request):
+def abmain(request):
 
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
 
@@ -511,3 +511,101 @@ def idw(request, model_id):
     cursor.close()
     cnx.close()
     return render(request, 'idw.html', context)
+
+'''
+main is the function for main page.
+'''
+def epamain(request):
+
+    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+
+    dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
+    hourString = '{0:02d}'.format(current.hour)
+    import mysql.connector
+    cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
+    cursor = cnx.cursor()
+    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
+
+    outOfDate = current + datetime.timedelta(days=-15)
+    outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
+
+    cursor.execute(query, outOfDateString)
+
+    data = []
+    for (model_id, hour_ahead, prediction, real) in cursor:
+        record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
+        data.append(record)
+    
+    cursor.close()
+    cnx.close()
+
+    table = pd.DataFrame(data)
+    table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
+    full = table.replace([np.inf, -np.inf], np.nan).dropna()
+
+    medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
+    statistics_0_1 = str(int(round(medianError[6][1]*100)))
+    statistics_0_2 = str(int(round(medianError[6][2]*100)))
+    statistics_0_3 = str(int(round(medianError[6][3]*100)))
+    statistics_0_4 = str(int(round(medianError[6][4]*100)))
+    statistics_0_5 = str(int(round(medianError[6][5]*100)))
+
+    model_id = 6
+    modelName = "Mahajan"
+
+    queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
+    cursor.execute(queryLeft, (dateString, hourString, str(model_id)))
+
+    leftHalfData = []
+    for (id, hour_ahead, prediction) in cursor:
+        record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
+        leftHalfData.append(record)
+
+    queryRight = "select ID, HOUR_AHEAD, PREDICTION from predictions where DATE = %s and HOUR = %s and MODEL = %s"
+    cursor.execute(queryRight, (dateString, hourString, str(model_id)))
+
+    rightHalfData= []
+    for (id, hour_ahead, prediction) in cursor:
+        record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
+        rightHalfData.append(record)
+
+    queryNow = "select ID, READING from readings where DATE = %s and HOUR = %s"
+    cursor.execute(queryNow, (dateString, hourString))
+
+    dataNow = []
+    for (id, reading) in cursor:
+        record = {"ID": id, "READING": reading}
+        dataNow.append(record)
+
+    if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
+        resultSetLeft = pd.DataFrame(leftHalfData)
+        resultSetRight = pd.DataFrame(rightHalfData)
+        resultSetNow = pd.DataFrame(dataNow).set_index('ID')
+        leftHalfTable = resultSetLeft.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
+        leftHalfTable.columns = [str(col) + "left" for col in leftHalfTable.columns]
+        rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
+        rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
+
+        fullTable = pd.merge(leftHalfTable, rightHalfTable, how='outer', left_index=True, right_index=True)
+        perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
+        perfectTable['ID'] = perfectTable.index
+
+        perfectTable.to_csv(os.path.join(BASE_DIR, "static/epa/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
+        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+            'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
+            'medianErrorM_5': statistics_0_5}
+        cursor.close()
+        cnx.close()
+        return render(request, 'overview.html', context)
+    else:
+        
+        adjusted = current - datetime.timedelta(hours = 1)
+        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
+
+        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
+        adjustHourString = '{0:02d}'.format(adjusted.hour)
+        context = {'filename': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+            'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
+            'medianErrorM_5': statistics_0_5}
+
+    return render(request, 'epa-main.html', context)
