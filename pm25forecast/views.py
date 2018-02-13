@@ -524,9 +524,9 @@ def epamain(request):
     import mysql.connector
     cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
-    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
+    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readingsEPA r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
-    outOfDate = current + datetime.timedelta(days=-1)
+    outOfDate = current + datetime.timedelta(days=-2)
     outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
     cursor.execute(query, outOfDateString)
@@ -569,7 +569,7 @@ def epamain(request):
         record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
         rightHalfData.append(record)
 
-    queryNow = "select ID, READING from readings where DATE = %s and HOUR = %s"
+    queryNow = "select ID, READING from readingsEPA where DATE = %s and HOUR = %s"
     cursor.execute(queryNow, (dateString, hourString))
 
     dataNow = []
