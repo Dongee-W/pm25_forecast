@@ -591,7 +591,7 @@ def epamain(request):
         perfectTable['ID'] = perfectTable.index
 
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/epa/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+        context = {'filename': ("epa/overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
             'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
             'medianErrorM_5': statistics_0_5}
         
@@ -601,7 +601,7 @@ def epamain(request):
 
         adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
         adjustHourString = '{0:02d}'.format(adjusted.hour)
-        context = {'filename': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
+        context = {'filename': ("epa/overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
             'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
             'medianErrorM_5': statistics_0_5}
 
