@@ -1,0 +1,73 @@
+{% load static %}
+<!doctype html>
+
+<html lang="en">
+    <head>
+    <meta charset="utf-8">
+
+    <title>D3 js playground</title>
+    <meta name="description" content="The HTML5 Herald">
+    <meta name="author" content="SitePoint">
+
+    <link rel="stylesheet" href="{% static "css/index.css" %}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.css">
+    
+    
+    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.2/d3.js"></script>-->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+
+
+    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.2.13/semantic.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    
+
+    <!--[if lt IE 9]>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+    <![endif]-->
+    </head>
+    <body>
+        <div class="ui container" >
+            <h2 class="ui center aligned icon header" id="center-message">
+                <i class="calculator icon"></i>
+                <div class="content">
+                    Welcome to PM 2.5 Forecast Service!
+                </div>
+            </h2>
+            <div class="ui link cards" id="container">
+                <div class="card" onclick="location.href='epamain'">
+                  <div class="image">
+                    <img src="{% static "EPA.jpg" %}">
+                  </div>
+                  <div class="content">
+                    <div class="header">環保署</div>
+                    <div class="meta">
+                      <a>Online</a>
+                    </div>
+                    <div class="description">
+                      Predictions based on EPA data.
+                    </div>
+                  </div>
+                </div>
+                <div class="card">
+                  <div class="image">
+                    <img src="{% static "LASS.jpg" %}">
+                  </div>
+                  <div class="content">
+                    <div class="header">ＡirBox</div>
+                    <div class="meta">
+                      <span class="date">Coming soon</span>
+                    </div>
+                    <div class="description">
+                      Predictions based on AirBox data.
+                    </div>
+                  </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

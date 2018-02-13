@@ -15,7 +15,7 @@ from . import config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+    return render(request, 'index.html')
 
 def overview_test(request):
     context = {'filename': "overview_2018011719_0.csv", 'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM", 'modelId': 1}
