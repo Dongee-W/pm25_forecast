@@ -1,0 +1,32 @@
+.card-text {
+    text-align: center;
+}
+
+#center-message {
+    margin-top: 90px;
+    margin-bottom: 65px;
+}
+
+#gotooverview {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+#myDiv {
+    margin-top: 0px;
+  }
+
+line {
+    fill: rgb(256,256,256);
+}
+#numbers {
+    margin-bottom: 20px;
+}
+
+#chart {
+    margin-top: 130px;
+  }
+
+#savebutton{
+    margin-botton: 5px;
+}

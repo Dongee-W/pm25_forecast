@@ -4,7 +4,7 @@
 {% block title %}Performance evaluation{% endblock %}
 
 {% block local_import %}
-<link rel="stylesheet" href="{% static "css/main.css" %}">
+<link rel="stylesheet" href="{% static "css/epa-main.css" %}">
 <script type="text/javascript" src="{% static "js/jquery.tablesort.js" %}"></script>
 {% endblock %}
 
@@ -16,10 +16,6 @@
             <div class="sub header">Last update: {{lastUpdate}}</div>
     </div>
 </h2>
-<a class="ui  labeled icon button right floated actionbutton tiny" href="{% static filename %}">
-    <i class="download icon"></i>
-    Save
-</a>
 <div class="ui horizontal divider">
     Mahajan Model
   </div>
@@ -85,7 +81,10 @@
         </div>
     </div>
 </div>
-
+<a class="ui  labeled icon button right floated actionbutton tiny" href="{% static filename %}" id="savebutton">
+    <i class="download icon"></i>
+    Save
+</a>
 <table class="ui sortable celled table" id="table">
     <thead>
         <tr class="numerical"><th>Site</th>
