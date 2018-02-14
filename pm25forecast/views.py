@@ -530,7 +530,7 @@ def epamain(request):
     outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
     cursor.execute(query, outOfDateString)
-    name=current.strftime('%Y%m%d%H')
+    name=current.strftime('%Y-%m-%d %I%p')
 
     data = []
     for (model_id, hour_ahead, prediction, real) in cursor:
