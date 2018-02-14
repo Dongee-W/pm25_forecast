@@ -33,40 +33,48 @@
     <body>
         <div class="ui container" >
             <h2 class="ui center aligned icon header" id="center-message">
-                <i class="calculator icon"></i>
+                <i class="newspaper icon"></i>
                 <div class="content">
                     Welcome to PM 2.5 Forecast Service!
                 </div>
+                <div class="sub header">an AirBox project</div>
             </h2>
-            <div class="ui link cards" id="container">
-                <div class="card" onclick="location.href='epamain'">
-                  <div class="image">
-                    <img src="{% static "EPA.jpg" %}">
-                  </div>
-                  <div class="content">
-                    <div class="header">環保署</div>
-                    <div class="meta">
-                      <a>Online</a>
-                    </div>
-                    <div class="description">
-                      Predictions based on EPA data.
-                    </div>
-                  </div>
+            <div class="ui four column grid container" id="container">
+                <div class = "column"></div>
+                <div class = "column">
+                    <a class="ui fluid card" href="/epamain">
+                        <div class="image">
+                            <img src="{% static "EPAx.jpg" %}">
+                        </div>
+                        <div class="content">
+                            <div class="header">環保署</div>
+                            <div class="meta">
+                            <span class="date">Currently online</span>
+                            </div>
+                            <div class="description">
+                            Predictions based on EPA data.
+                            </div>
+                        </div>
+                    </a>
                 </div>
-                <div class="card">
-                  <div class="image">
-                    <img src="{% static "LASS.jpg" %}">
-                  </div>
-                  <div class="content">
-                    <div class="header">ＡirBox</div>
-                    <div class="meta">
-                      <span class="date">Coming soon</span>
-                    </div>
-                    <div class="description">
-                      Predictions based on AirBox data.
-                    </div>
-                  </div>
+                
+                <div class="column">
+                    <a class="ui fluid card " href="/abmain">
+                        <div class="image">
+                            <img src="{% static "LASS.jpg" %}">
+                        </div>
+                        <div class="content">
+                            <div class="header">AirBox</div>
+                            <div class="meta">
+                            <span class="date">Currently online</span>
+                            </div>
+                            <div class="description">
+                            Predictions based on AirBox data.
+                            </div>
+                        </div>
+                    </a>
                 </div>
+                <div class = "column"></div>
             </div>
         </div>
     </body>
