@@ -20,13 +20,13 @@ line {
     fill: rgb(256,256,256);
 }
 #numbers {
-    margin-bottom: 20px;
+    margin-bottom: 10px;
 }
 
 #chart {
     margin-top: 130px;
   }
 
-#savebutton{
-    margin-botton: 5px;
+#table{
+    margin-top: 25px;
 }
