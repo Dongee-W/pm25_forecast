@@ -73,7 +73,7 @@ def overview(request, model_id):
 
     dataNow = []
     for (id, reading) in cursor:
-        record = {"ID": id, "READING": reading}
+        record = {"ID": id, "READING": float(reading)}
         dataNow.append(record)
 
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
@@ -81,16 +81,30 @@ def overview(request, model_id):
         resultSetRight = pd.DataFrame(rightHalfData)
         resultSetNow = pd.DataFrame(dataNow).set_index('ID')
         leftHalfTable = resultSetLeft.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
-        leftHalfTable.columns = [str(col) + "left" for col in leftHalfTable.columns]
+        leftHalfTable.columns = ["now-" + str(col) + "h" for col in leftHalfTable.columns]
         rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
-        rightHalfTable.columns = [str(col) + "right" for col in rightHalfTable.columns]
+        rightHalfTable.columns = ["now+" + str(col) + "h" for col in rightHalfTable.columns]
 
         fullTable = pd.merge(leftHalfTable, rightHalfTable, how='outer', left_index=True, right_index=True)
+        resultSetNow.columns = ['now']
         perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
-        perfectTable['ID'] = perfectTable.index
+        perfectTable['device_id'] = perfectTable.index
 
+        perfectTable = perfectTable[["device_id", "now-5h", "now-4h", "now-3h", "now-2h", "now-1h", "now", "now+1h", "now+2h", "now+3h", "now+4h", "now+5h"]]
         perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-        context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id}
+
+        sourceString = "pm25-forecast-yang by IIS-NRL"
+        versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
+        numRecords = len(perfectTable)
+        dateStringJson = current.strftime('%Y-%m-%d')
+        timeString = hourString + ":00"
+        feeds = perfectTable.to_dict(orient="records")
+        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feeds})
+
+        with open(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".json"), "w") as jsonFile:
+            jsonFile.write(jsonString)
+
+        context = {'csvFile': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'jsonFile': ("overview_" + dateString + hourString + "_" + model_id + ".json"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id}
         cursor.close()
         cnx.close()
         return render(request, 'overview.html', context)
