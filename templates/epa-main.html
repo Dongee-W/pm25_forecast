@@ -81,9 +81,13 @@
         </div>
     </div>
 </div>
-<a class="ui  labeled icon button right floated actionbutton tiny" href="{% static filename %}" id="savebutton">
+<a class="ui  labeled icon button right floated actionbutton tiny" href="{% static csvFile %}" id="savebutton">
     <i class="download icon"></i>
-    Save
+    csv
+</a>
+<a class="ui  labeled icon button right floated actionbutton tiny" href="{% static jsonFile %}" id="savebutton">
+    <i class="download icon"></i>
+    json
 </a>
 <table class="ui sortable celled table" id="table">
     <thead>
@@ -133,7 +137,7 @@
         }
     }
 
-    d3.csv("{% static filename %}", rowConverter, function(dataset) {
+    d3.csv("{% static csvFile %}", rowConverter, function(dataset) {
         d3.select("tbody")
             .selectAll("tr")
             .data(dataset)
