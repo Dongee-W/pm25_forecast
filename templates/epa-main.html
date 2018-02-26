@@ -122,18 +122,18 @@
     }
     var rowConverter = function(d) {
         return {
-            id: d["ID"],
-            left5: parseFloat(d["5left"]),
-            left4: parseFloat(d["4left"]),
-            left3: parseFloat(d["3left"]),
-            left2: parseFloat(d["2left"]),
-            left1: parseFloat(d["1left"]),
-            readings: parseFloat(d["READING"]),
-            right1: parseFloat(d["1right"]),
-            right2: parseFloat(d["2right"]),
-            right3: parseFloat(d["3right"]),
-            right4: parseFloat(d["4right"]),
-            right5: parseFloat(d["5right"])
+            id: d["device_id"],
+            left5: parseFloat(d["now-5h"]),
+            left4: parseFloat(d["now-4h"]),
+            left3: parseFloat(d["now-3h"]),
+            left2: parseFloat(d["now-2h"]),
+            left1: parseFloat(d["now-1h"]),
+            readings: parseFloat(d["now"]),
+            right1: parseFloat(d["now+1h"]),
+            right2: parseFloat(d["now+2h"]),
+            right3: parseFloat(d["now+3h"]),
+            right4: parseFloat(d["now+4h"]),
+            right5: parseFloat(d["now+5h"])
         }
     }
 
