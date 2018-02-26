@@ -76,7 +76,7 @@
         }
     }
 
-    d3.csv("{% static filename %}", rowConverter, function(dataset) {
+    d3.csv("{% static csvFile %}", rowConverter, function(dataset) {
         d3.select("tbody")
             .selectAll("tr")
             .data(dataset)
