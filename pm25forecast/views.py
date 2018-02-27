@@ -537,6 +537,7 @@ main is the function for main page.
 def epamain(request):
 
     current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
@@ -563,8 +564,7 @@ def epamain(request):
         outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
         cursor.execute(query, outOfDateString)
-        name=current.strftime('%Y-%m-%d %I%p')
-
+        
         data = []
         for (model_id, hour_ahead, prediction, real) in cursor:
             record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
