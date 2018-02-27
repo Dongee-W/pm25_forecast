@@ -543,31 +543,45 @@ def epamain(request):
     import mysql.connector
     cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
-    query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readingsEPA r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
-    outOfDate = current + datetime.timedelta(days=-2)
-    outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
+    performanceCache = os.path.join(BASE_DIR, "static/epa/main_" + dateString + hourString + ".json")
 
-    cursor.execute(query, outOfDateString)
-    name=current.strftime('%Y-%m-%d %I%p')
+    pc = Path(performanceCache)
 
-    data = []
-    for (model_id, hour_ahead, prediction, real) in cursor:
-        record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
-        data.append(record)
-    
-    
+    if pc.is_file():
+        with open(performanceCache) as f:
+            data = json.load(f)
+            statistics_0_1 = data[0]
+            statistics_0_2 = data[1]
+            statistics_0_3 = data[2]
+            statistics_0_4 = data[3]
+            statistics_0_5 = data[4]
+    else:
+        query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readingsEPA r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
-    table = pd.DataFrame(data)
-    table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
-    full = table.replace([np.inf, -np.inf], np.nan).dropna()
+        outOfDate = current + datetime.timedelta(days=-2)
+        outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
 
-    medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
-    statistics_0_1 = str(int(round(medianError[6][1]*100)))
-    statistics_0_2 = str(int(round(medianError[6][2]*100)))
-    statistics_0_3 = str(int(round(medianError[6][3]*100)))
-    statistics_0_4 = str(int(round(medianError[6][4]*100)))
-    statistics_0_5 = str(int(round(medianError[6][5]*100)))
+        cursor.execute(query, outOfDateString)
+        name=current.strftime('%Y-%m-%d %I%p')
+
+        data = []
+        for (model_id, hour_ahead, prediction, real) in cursor:
+            record = {"MODEL": int(model_id), "HOUR_AHEAD": float(hour_ahead), "PREDICTION": float(prediction), "REAL": float(real)}
+            data.append(record)
+        
+        
+
+        table = pd.DataFrame(data)
+        table['RELATIVE_ERROR'] = abs(table['REAL'] - table['PREDICTION'])/table['REAL']
+        full = table.replace([np.inf, -np.inf], np.nan).dropna()
+
+        medianError = full.groupby(['MODEL','HOUR_AHEAD'])['RELATIVE_ERROR'].median()
+        statistics_0_1 = str(int(round(medianError[6][1]*100)))
+        statistics_0_2 = str(int(round(medianError[6][2]*100)))
+        statistics_0_3 = str(int(round(medianError[6][3]*100)))
+        statistics_0_4 = str(int(round(medianError[6][4]*100)))
+        statistics_0_5 = str(int(round(medianError[6][5]*100)))
 
     model_id = "6"
     modelName = "Mahajan"
