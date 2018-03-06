@@ -32,6 +32,9 @@
     <thead>
         <tr class="numerical"><th>Site</th>
             <th class="string">Site ID</th>
+            {% if isClustered %}
+                <th class="string">Cluster</th>
+            {% endif %}
             <th class="minus">-5</th>
             <th class="minus">-4</th>
             <th class="minus">-3</th>
@@ -62,6 +65,7 @@
     var rowConverter = function(d) {
         return {
             id: d["device_id"],
+            cluster: d["Cluster"],
             left5: parseFloat(d["now-5h"]),
             left4: parseFloat(d["now-4h"]),
             left3: parseFloat(d["now-3h"]),
@@ -121,6 +125,9 @@
 
                 return `<td data-sort-value=\"${i + 1}\">${i + 1}</td>
                 <td><a href=\"/forecast/${d.id}\">${d.id}</a></td>
+                {% if isClustered %}
+                    <td>${d.cluster}</td>
+                {% endif %}
                 <td data-sort-value=\"${m5error}\">${m5content + m5errorHTML}</td>
                 <td data-sort-value=\"${m4error}\">${m4content + m4errorHTML}</td>
                 <td data-sort-value=\"${m3error}\">${m3content + m3errorHTML}</td>
