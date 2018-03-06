@@ -50,7 +50,7 @@ def overview(request, model_id):
     # Temporary Use
     if(model_id == "3"): 
         withClustering = True
-        model_id = 0
+        model_id = "0"
     else:
         withClustering = False
 
