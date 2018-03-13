@@ -6,6 +6,7 @@ import datetime
 import pytz
 from pathlib import Path
 import json
+import math
 
 import pandas as pd
 import numpy as np
@@ -43,7 +44,7 @@ def overview(request, model_id):
 
     # parameters for testing
     '''
-    dateString = '20171127'
+    dateString = '20180227'
     hourString = '16'
     '''
 
@@ -112,7 +113,20 @@ def overview(request, model_id):
         dateStringJson = current.strftime('%Y-%m-%d')
         timeString = hourString + ":00"
         feeds = ultimate.to_dict(orient="records")
-        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feeds})
+
+        '''
+        Change nan to None
+        '''
+        def replaceNan(dict):
+            dictionary = {key: value for key, value in dict.items()}
+            for key, value in dictionary.items():
+                if key != "device_id" and math.isnan(value):
+                    dictionary[key] = None
+            return dictionary
+
+        feedsNew = [replaceNan(x) for x in feeds]
+
+        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feedsNew})
 
         with open(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".json"), "w") as jsonFile:
             jsonFile.write(jsonString)
@@ -650,7 +664,20 @@ def epamain(request):
         dateStringJson = current.strftime('%Y-%m-%d')
         timeString = hourString + ":00"
         feeds = perfectTable.to_dict(orient="records")
-        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feeds})
+
+        '''
+        Change nan to None
+        '''
+        def replaceNan(dict):
+            dictionary = {key: value for key, value in dict.items()}
+            for key, value in dictionary.items():
+                if key != "device_id" and math.isnan(value):
+                    dictionary[key] = None
+            return dictionary
+
+        feedsNew = [replaceNan(x) for x in feeds]
+
+        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feedsNew})
 
         with open(os.path.join(BASE_DIR, "static/epa/overview_" + dateString + hourString + "_" + model_id + ".json"), "w") as jsonFile:
             jsonFile.write(jsonString)
