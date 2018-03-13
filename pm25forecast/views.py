@@ -120,8 +120,9 @@ def overview(request, model_id):
         def replaceNan(dict):
             dictionary = {key: value for key, value in dict.items()}
             for key, value in dictionary.items():
-                if key != "device_id" and math.isnan(value):
-                    dictionary[key] = None
+                if key != "device_id":
+                    if math.isnan(value):
+                        dictionary[key] = None
             return dictionary
 
         feedsNew = [replaceNan(x) for x in feeds]
