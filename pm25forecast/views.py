@@ -120,7 +120,7 @@ def overview(request, model_id):
         def replaceNan(dict):
             dictionary = {key: value for key, value in dict.items()}
             for key, value in dictionary.items():
-                if key != "device_id":
+                if key != "device_id" and key != "Cluster":
                     if math.isnan(value):
                         dictionary[key] = None
             return dictionary
