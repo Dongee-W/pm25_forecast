@@ -86,7 +86,7 @@ def overview(request, model_id):
         dataNow.append(record)
 
     if withClustering == True:
-        model_id = 3
+        model_id = "3"
 
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
         resultSetLeft = pd.DataFrame(leftHalfData)
