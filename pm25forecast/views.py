@@ -85,6 +85,9 @@ def overview(request, model_id):
         record = {"ID": id, "READING": float(reading)}
         dataNow.append(record)
 
+    if withClustering == True:
+        model_id = 3
+
     if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
         resultSetLeft = pd.DataFrame(leftHalfData)
         resultSetRight = pd.DataFrame(rightHalfData)
@@ -102,17 +105,24 @@ def overview(request, model_id):
             if col not in perfectTable:
                 perfectTable[col] = np.nan
         perfectTable = perfectTable[["device_id", "now-5h", "now-4h", "now-3h", "now-2h", "now-1h", "now", "now+1h", "now+2h", "now+3h", "now+4h", "now+5h"]]
-        cluster = pd.read_csv("/home/pm25_forecast/complete.csv")
 
-        ultimate = pd.merge(perfectTable, cluster, how="inner", left_on="device_id", right_on="ID").drop("ID", axis = 1)
-        ultimate.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-
-        sourceString = "pm25-forecast-yang by IIS-NRL"
-        versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
-        numRecords = len(perfectTable)
-        dateStringJson = current.strftime('%Y-%m-%d')
-        timeString = hourString + ":00"
-        feeds = ultimate.to_dict(orient="records")
+        if withClustering == True:
+            cluster = pd.read_csv("/home/pm25_forecast/complete.csv")
+            ultimate = pd.merge(perfectTable, cluster, how="inner", left_on="device_id", right_on="ID").drop("ID", axis = 1)
+            ultimate.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
+            sourceString = "pm25-forecast-yang by IIS-NRL"
+            versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
+            numRecords = len(ultimate)
+            dateStringJson = current.strftime('%Y-%m-%d')
+            timeString = hourString + ":00"
+            feeds = ultimate.to_dict(orient="records")
+        else:
+            perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
+            versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
+            numRecords = len(perfectTable)
+            dateStringJson = current.strftime('%Y-%m-%d')
+            timeString = hourString + ":00"
+            feeds = perfectTable.to_dict(orient="records")
 
         '''
         Change nan to None

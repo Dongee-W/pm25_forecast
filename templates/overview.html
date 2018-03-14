@@ -65,7 +65,9 @@
     var rowConverter = function(d) {
         return {
             id: d["device_id"],
-            cluster: d["Cluster"],
+            {% if isClustered %}
+                cluster: d["Cluster"],
+            {% endif %}
             left5: parseFloat(d["now-5h"]),
             left4: parseFloat(d["now-4h"]),
             left3: parseFloat(d["now-3h"]),
