@@ -118,6 +118,7 @@ def overview(request, model_id):
             feeds = ultimate.to_dict(orient="records")
         else:
             perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
+            sourceString = "pm25-forecast-yang by IIS-NRL"
             versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
             numRecords = len(perfectTable)
             dateStringJson = current.strftime('%Y-%m-%d')
