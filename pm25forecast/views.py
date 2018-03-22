@@ -72,7 +72,7 @@ def overview(request, model_id):
     '''
 
     # parameters end ...
-    '''
+    
     import mysql.connector
     cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
@@ -139,11 +139,11 @@ def overview(request, model_id):
             dateStringJson = current.strftime('%Y-%m-%d')
             timeString = hourString + ":00"
             feeds = perfectTable.to_dict(orient="records")
-        '''
+        
         '''
         Change nan to None
         '''
-        '''
+        
         def replaceNan(dict):
             dictionary = {key: value for key, value in dict.items()}
             for key, value in dictionary.items():
@@ -175,7 +175,7 @@ def overview(request, model_id):
         context = {'csvFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'jsonFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".json"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'isClustered': withClustering}
 
         return render(request, 'overview.html', context)
-    '''
+    
 
 '''
 forecast_test is for the demonstration purpose.
