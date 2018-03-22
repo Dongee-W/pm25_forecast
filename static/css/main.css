@@ -26,3 +26,12 @@ line {
 #chart {
     margin-top: 130px;
   }
+
+#cdf_divider {
+    margin-top: 30px;
+    margin-bottom: -10px;
+}
+
+#description_divider {
+    margin-top: 30px;
+}

@@ -15,136 +15,177 @@
         <div class="sub header">an AirBox project</div>
     </div>
 </h2>
-<div class="ui horizontal divider">
-    Mahajan Model
-  </div>
-<div class="ui five cards" id="numbers">
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                One-hour error
-                </div>
+<table class="ui  celled definition structured table">
+    <thead>
+      <tr>
+        <th></th>
+        <th colspan="6" class="center aligned">Median Relative Error</th>
+      </tr>  
+      <tr>
+        <th></th>
+        <th>Name</th>
+        <th>One-hour error</th>
+        <th>Two-hour error</th>
+        <th>Three-hour error</th>
+        <th>Four-hour error</th>
+        <th>Five-hour error</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td class="collapsing">
+            <button class="ui primary button" onclick="location.href='/overview/0'">
+                Overview
+            </button>
+        </td>
+        <td>Mahajan Model</td>
+        <td>
+            <div class="ui tiny statistic">
                 <div class="value">
                 {{medianErrorM_1}}%
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                Two-hour error
-                </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
                 <div class="value">
-                    {{medianErrorM_2}}%
+                {{medianErrorM_2}}%
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Three-hour error
-                </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
                 <div class="value">
-                    {{medianErrorM_3}}%
+                {{medianErrorM_3}}%
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Four-hour error
-                </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
                 <div class="value">
-                    {{medianErrorM_4}}%
+                {{medianErrorM_4}}%
                 </div>
             </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Five-hour error
-                </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
                 <div class="value">
-                    {{medianErrorM_5}}%
+                {{medianErrorM_5}}%
                 </div>
             </div>
-        </div>
-    </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="collapsing">
+            <button class="ui primary button" onclick="location.href='/overview/1'">
+                Overview
+            </button>
+        </td>
+        <td>Yang Model</td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorY_1}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorY_2}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorY_3}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui  tiny statistic">
+                <div class="value">
+                {{medianErrorY_4}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorY_5}}%
+                </div>
+            </div>
+        </td>
+      </tr>
+      <tr>
+        <td class="collapsing">
+            <button class="ui primary button" onclick="location.href='/overview/3'">
+                Overview
+            </button>
+        </td>
+        <td>Mahajan Model with clustering</td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorM_1}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorM_2}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorM_3}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorM_4}}%
+                </div>
+            </div>
+        </td>
+        <td>
+            <div class="ui tiny statistic">
+                <div class="value">
+                {{medianErrorM_5}}%
+                </div>
+            </div>
+        </td>
+        </tr>
+    </tbody>
+    <!--
+    <tfoot class="full-width">
+      <tr>
+        <th></th>
+        <th colspan="6">
+          <div class="ui right floated small primary labeled icon button">
+            <i class="user icon"></i> Add User
+          </div>
+          <div class="ui small button">
+            Approve
+          </div>
+          <div class="ui small  disabled button">
+            Approve All
+          </div>
+        </th>
+      </tr>
+    </tfoot>-->
+  </table>
+
+<div class="ui horizontal divider" id="cdf_divider">
+    <i class="chart line icon"></i>
+    Relative Error CDF
 </div>
-<div class="ui horizontal divider">
-    Yang Model
-  </div>
-<div class="ui five cards" id="numbers">
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                One-hour error
-                </div>
-                <div class="value">
-                    {{medianErrorY_1}}%
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                Two-hour error
-                </div>
-                <div class="value">
-                    {{medianErrorY_2}}%
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Three-hour error
-                </div>
-                <div class="value">
-                    {{medianErrorY_3}}%
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Four-hour error
-                </div>
-                <div class="value">
-                    {{medianErrorY_4}}%
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="card">
-        <div class="content centered card-text">
-            <div class="ui statistic">
-                <div class="label">
-                    Five-hour error
-                </div>
-                <div class="value">
-                    {{medianErrorY_5}}%
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+
 
 <div class="ui equal width grid">
     <div class="equal width row">
@@ -156,52 +197,33 @@
     </div>
   </div>
 
-
-<div class="ui cards" id="gotooverview">
-    <div class="card">
-      <div class="content">
+<div class="ui horizontal divider" id="description_divider">
+    <i class="tag icon"></i>
+    Description
+</div>
+<div class="ui list">
+    <div class="item">
         <div class="header">Mahajan Model</div>
-        <div class="description">
-            We use a hybrid model to do the forecast. The Hybrid model is made by utilizing the Autoregressive Integrated Moving Average (ARIMA) model and Neural Network Autoregressive (NNAR) model.
-        </div>
-      </div>
-      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/0';">
-        <div class="visible content">Go to model overview</div>
-        <div class="hidden content">
-          <i class="right arrow icon"></i>
-        </div>
-      </div>
+        We use a hybrid model to do the forecast. 
+        The Hybrid model is made by utilizing the Autoregressive 
+        Integrated Moving Average (ARIMA) model and Neural Network 
+        Autoregressive (NNAR) model.
     </div>
-    <div class="card">
-      <div class="content">
+    <div class="item">
         <div class="header">Yang Model</div>
-        <div class="description">
-            這個預測模型是基於尋找各個站點之間的關係程度進行預測
-            利用歷史資料和Tikhonov regularization來計算各個站點之間的關係程度進而計算未來1-5個時間單位的pm25值
-        </div>
-      </div>
-      <div class="ui animated button" tabindex="0" onclick="location.href='/overview/1'">
-        <div class="visible content">Go to model overview</div>
-        <div class="hidden content">
-          <i class="right arrow icon"></i>
-        </div>
-      </div>
+        This model is based on the degree of corelation between stations. 
+        By using historical data and Tikhonov regularization to estimate 
+        the degree of corelation between stations, future pm2.5
+        can be accurately computed.
     </div>
-    <div class="card">
-        <div class="content">
-          <div class="header">Mahajan Model with clustering</div>
-          <div class="description">
-            We use a combination of Neural network based Hybrid model and Wavelet-based Clustering to perform hourly PM2.5 prediction. The work is currently under review for publication now.
-          </div>
-        </div>
-        <div class="ui animated button" tabindex="0" onclick="location.href='/overview/3'">
-          <div class="visible content">Go to model overview</div>
-          <div class="hidden content">
-            <i class="right arrow icon"></i>
-          </div>
-        </div>
-      </div>
-  </div>
+    <div class="item">
+        <div class="header">Mahajan Model with clustering</div>
+        We use a combination of Neural network based Hybrid model 
+        and Wavelet-based Clustering to perform hourly PM2.5 prediction. 
+        The work is currently under review for publication now.
+    </div>
+</div>
+
 
 <script type="text/javascript">
             Plotly.d3.csv("https://raw.githubusercontent.com/plotly/datasets/master/finance-charts-apple.csv", function(err, rows){
