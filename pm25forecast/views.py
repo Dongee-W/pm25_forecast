@@ -35,12 +35,35 @@ def overview(request, model_id):
     else:
         modelName = "Yang"
 
+    # Temporary Use
+    if(model_id == "3"): 
+        withClustering = True
+        modelName = "Mahajan"
+        #model_id = "0"
+    else:
+        withClustering = False
+
     lastest_file = Path(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"))
 
     # This is for performance, but this will not get updated once the file is created.
-    #if lastest_file.is_file():
-    #    context = {'filename': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'modelName': modelName, 'lastUpdate': name}
-    #    return render(request, 'overview.html', context)
+    if lastest_file.is_file():
+        context = {'csvFile': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 
+                'jsonFile': ("overview_" + dateString + hourString + "_" + model_id + ".json"), 
+                'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'isClustered': withClustering}
+
+        return render(request, 'overview.html', context)
+    else:
+        adjusted = current - datetime.timedelta(hours = 1)
+        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
+
+        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
+        adjustHourString = '{0:02d}'.format(adjusted.hour)
+
+
+        context = {'csvFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 
+        'jsonFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".json"), 'modelName': modelName, 
+        'lastUpdate': adjustName, 'modelId': model_id, 'isClustered': withClustering}
+        return render(request, 'overview.html', context)
 
     # parameters for testing
     '''
@@ -48,16 +71,8 @@ def overview(request, model_id):
     hourString = '16'
     '''
 
-    # Temporary Use
-    if(model_id == "3"): 
-        withClustering = True
-        modelName = "Mahajan"
-        model_id = "0"
-    else:
-        withClustering = False
-
     # parameters end ...
-
+    '''
     import mysql.connector
     cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
@@ -124,9 +139,10 @@ def overview(request, model_id):
             dateStringJson = current.strftime('%Y-%m-%d')
             timeString = hourString + ":00"
             feeds = perfectTable.to_dict(orient="records")
-
+        '''
         '''
         Change nan to None
+        '''
         '''
         def replaceNan(dict):
             dictionary = {key: value for key, value in dict.items()}
@@ -159,7 +175,7 @@ def overview(request, model_id):
         context = {'csvFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'jsonFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".json"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'isClustered': withClustering}
 
         return render(request, 'overview.html', context)
-    
+    '''
 
 '''
 forecast_test is for the demonstration purpose.
