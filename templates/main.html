@@ -124,7 +124,7 @@
                 Overview
             </button>
         </td>
-        <td>Mahajan Model with clustering</td>
+        <td>Mahajan-Liu Model (with clustering)</td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
@@ -162,23 +162,25 @@
         </td>
         </tr>
     </tbody>
-    <!--
     <tfoot class="full-width">
       <tr>
         <th></th>
         <th colspan="6">
-          <div class="ui right floated small primary labeled icon button">
-            <i class="user icon"></i> Add User
-          </div>
-          <div class="ui small button">
-            Approve
-          </div>
-          <div class="ui small  disabled button">
-            Approve All
-          </div>
+            <div class="ui equal width grid">
+                <div class="equal width row">
+                    <div class="column"></div>
+
+                    <div class="column">
+                        <ol class="ui list">
+                            <li value="*">Despite lower accuracy, Yang Model runs about 6000 times faster than Mahajan Model at current state.</li>
+                            <li value="*">Mahajan-Liu Model is still under development.</li>
+                        </ol>
+                    </div>
+                </div>
+              </div>
         </th>
       </tr>
-    </tfoot>-->
+    </tfoot>
   </table>
 
 <div class="ui horizontal divider" id="cdf_divider">
@@ -217,7 +219,7 @@
         can be accurately computed.
     </div>
     <div class="item">
-        <div class="header">Mahajan Model with clustering</div>
+        <div class="header">Mahajan-Liu Model (with clustering)</div>
         We use a combination of Neural network based Hybrid model 
         and Wavelet-based Clustering to perform hourly PM2.5 prediction. 
         The work is currently under review for publication now.
