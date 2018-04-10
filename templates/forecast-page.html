@@ -28,6 +28,7 @@
         </filter>
     </defs>
 </svg>
+
 <div id='map' style='width: 100%; height: 300px;'></div>
 <script type="text/javascript">
     
@@ -297,6 +298,14 @@
             .attr("class", "axis")
             .attr("transform", "translate(0," + (h - bottom_paddings) + ")")
             .call(xAxis);
+
+        /* Axis */
+        var yAxis = d3.axisLeft(yscale).tickSize(0).tickPadding(20);
+        d3.select("svg")
+            .append("g")
+            .attr("class", "axis")
+            .attr("transform", "translate("+ left_paddings +", 0)")
+            .call(yAxis);
 
     
     });
