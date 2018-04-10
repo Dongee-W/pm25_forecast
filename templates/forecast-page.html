@@ -55,19 +55,33 @@
     // yellow: rgb(255, 214, 51)
 
     var colorPicker = function(readings, i) {
-        if (readings < 35 && i != 0) return "rgba(51, 153, 102, 0.4)"
-        else if (readings >= 35 && readings < 53 && i != 0) return "rgba(255, 214, 51, 0.4)"
-        else if (readings >= 53 && readings < 70 && i != 0) return "rgba(255, 92, 51, 0.4)"
-        else if (readings >= 70 && i != 0) return "rgba(102, 0, 204, 0.4)"
-        else if (readings < 35) return "rgba(51, 153, 102, 1)"
-        else if (readings >= 35 && readings < 53) return "rgba(255, 214, 51, 1)"
-        else if (readings >= 53 && readings < 70) return "rgba(255, 92, 51, 1)"
+        if (readings <= 35 && i != 0) return "rgba(51, 153, 102, 0.4)"
+        else if (readings > 35 && readings <= 53 && i != 0) return "rgba(255, 214, 51, 0.4)"
+        else if (readings > 53 && readings <= 70 && i != 0) return "rgba(255, 92, 51, 0.4)"
+        else if (readings > 70 && i != 0) return "rgba(102, 0, 204, 0.4)"
+        else if (readings <= 35) return "rgba(51, 153, 102, 1)"
+        else if (readings > 35 && readings <= 53) return "rgba(255, 214, 51, 1)"
+        else if (readings > 53 && readings <= 70) return "rgba(255, 92, 51, 1)"
         else return "rgba(102, 0, 204, 1)"
+    }
+
+    var comment = function(readings) {
+        if (readings <= 35) return "Good"
+        else if (readings > 35 && readings <= 53) return "Moderate"
+        else if (readings > 53 && readings <= 70) return "Unhealthy"
+        else return "Hazardous"
+    }
+
+    var commentSize = function(text) {
+        if (text == "Good") return "28px"
+        else if (text == "Moderate") return "22px"
+        else if (text == "Unhealthy" || text == "Hazardous") return "20px"
+        else return "20px"
     }
 
     var textSize = function(readings) {
         var numberOfDigit = Math.round(readings).toString().length
-        if (numberOfDigit == 1) return "65px"
+        if (numberOfDigit == 1) return "61px"
         else if (numberOfDigit == 2) return "50px"
         else if (numberOfDigit == 3) return "40px"
         else return "35px"
@@ -75,10 +89,17 @@
 
     var textPositionAdjustment = function(readings) {
         var numberOfDigit = Math.floor(readings).toString().length
-        if (numberOfDigit == 1) return 22
-        else if (numberOfDigit == 2) return 17
+        if (numberOfDigit == 1) return 5
+        else if (numberOfDigit == 2) return 6
         else if (numberOfDigit == 3) return 15
         else return 14
+    }
+
+    var commentPositionAdjustment = function(text) {
+        if (text == "Good") return 5
+        else if (text == "Moderate" || text == "Unhealthy") return 2
+        else if (text == "Hazardous") return 0
+        else return 0
     }
 
     
@@ -270,12 +291,13 @@
             .append("text")
             .attr("class", "meter-unit")
             .attr("x", function(d, i) { return time_scale(d.timestamp);})
-            .attr("y", function(d, i) { return position[i] + 40;})
+            .attr("y", function(d, i) { return position[i] + 30 + commentPositionAdjustment(comment(d.readings));})
             .attr("fill", "white")
-            .text("μg/㎥")
-            .attr("font-family", "serif")
-            .attr("font-size", "12px")
+            .text(function (d) { return comment(d.readings); })
+            .attr("font-family", "sans-serif")
+            .attr("font-size", function(d){return commentSize(comment(d.readings));})
             .attr("text-anchor", "middle");
+        // μg/㎥
 
 
 

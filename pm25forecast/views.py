@@ -181,7 +181,7 @@ def overview(request, model_id):
 forecast_test is for the demonstration purpose.
 '''
 def forecast_test(request):
-    context = {'station_id': "WF_3977799", 'filename': "1421GE.csv", 'lastUpdate': "2018-01-18 09AM", 'lat': "23.97571", 'lon': "120.704944"}
+    context = {'station_id': "WF_3977799", 'filename': "1421GE_1.csv", 'lastUpdate': "2018-01-18 09AM", 'lat': "23.97571", 'lon': "120.704944"}
     return render(request, 'forecast-page.html', context)
 
 def forecast(request, station_id):
