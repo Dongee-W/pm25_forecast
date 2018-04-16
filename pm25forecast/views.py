@@ -265,14 +265,19 @@ def forecast(request, station_id):
             record = {"ID": id, "DATE": date, "HOUR": hour, "READING": reading}
             data.append(record)
 
-        query_predicion = "select ID, DATE, HOUR, HOUR_AHEAD, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s and MODEL = 0 ORDER BY HOUR_AHEAD"
+        query_predicion = "select ID, DATE, HOUR, HOUR_AHEAD, PREDICTION from predictions where ID = %s and DATE = %s and HOUR = %s ORDER BY MODEL, HOUR_AHEAD"
         cursor.execute(query_predicion, (station_id, adjustDateString, adjustHourString))
+
+        counter = 0
         for (id, date, hour, hour_ahead, prediction) in cursor:
             targetTime = datetime.datetime.strptime(date + hour, '%Y%m%d%H') + datetime.timedelta(hours = hour_ahead)
             targetDate = str(targetTime.year) + '{0:02d}'.format(targetTime.month) + '{0:02d}'.format(targetTime.day)
             targetHour = '{0:02d}'.format(targetTime.hour)
             record = {"ID": id, "DATE": targetDate, "HOUR": targetHour, "READING": prediction}
-            data.append(record)
+            if counter < 5:
+                data.append(record) 
+                counter += 1
+
         queryResult = pd.DataFrame(data)
         queryResult['TIMESTAMP'] = queryResult['DATE'] + queryResult['HOUR']
         final = queryResult.drop(["DATE", "HOUR"], axis=1)
