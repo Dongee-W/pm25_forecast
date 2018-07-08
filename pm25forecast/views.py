@@ -92,7 +92,7 @@ def overview(request, model_id):
         record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
         rightHalfData.append(record)
 
-    queryNow = "select ID, READING from readings where DATE = %s and HOUR = %s"
+    queryNow = "select ID, READING from readings_new where DATE = %s and HOUR = %s"
     cursor.execute(queryNow, (dateString, hourString))
 
     dataNow = []
@@ -220,7 +220,7 @@ def forecast(request, station_id):
         longtitude = "Longtitude not available"
         
 
-    query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
+    query = "select ID, DATE, HOUR, READING from readings_new where ID = %s and DATE = %s and HOUR = %s"
     cursor.execute(query, (station_id, dateString, hourString))
 
     data = []
@@ -257,7 +257,7 @@ def forecast(request, station_id):
         adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
         adjustHourString = '{0:02d}'.format(adjusted.hour)
 
-        query = "select ID, DATE, HOUR, READING from readings where ID = %s and DATE = %s and HOUR = %s"
+        query = "select ID, DATE, HOUR, READING from readings_new where ID = %s and DATE = %s and HOUR = %s"
         cursor.execute(query, (station_id, adjustDateString, adjustHourString))
 
         data = []
@@ -376,7 +376,7 @@ def abmain(request):
         import mysql.connector
         cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
         cursor = cnx.cursor()
-        query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
+        query = "select p.MODEL, p.HOUR_AHEAD, p.PREDICTION, r.READING from predictions p, readings_new r where p.ID = r.ID and p.TARGET_DATE = r.DATE and p.TARGET_HOUR = r.HOUR and r.DATE > %s"
 
         outOfDate = current + datetime.timedelta(days=-5)
         outOfDateString = (str(outOfDate.year) + '{0:02d}'.format(outOfDate.month) + '{0:02d}'.format(outOfDate.day),)
@@ -491,7 +491,8 @@ def abmain(request):
     return render(request, 'main.html', context)
 
 def idw_test(request):
-    return render(request, 'idw.html')
+    context = {'filename': "animation_2018042917_1.js"}
+    return render(request, 'idw.html', context)
 
 def idw(request, model_id):
     '''
@@ -518,7 +519,7 @@ def idw(request, model_id):
     import mysql.connector
     cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
     cursor = cnx.cursor()
-    queryPastNow = "select ID, DATE, HOUR, READING from readings where " + whereclause
+    queryPastNow = "select ID, DATE, HOUR, READING from readings_new where " + whereclause
     cursor.execute(queryPastNow)
 
     leftHalfData= []
