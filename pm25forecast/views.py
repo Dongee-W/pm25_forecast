@@ -24,7 +24,7 @@ def overview_test(request):
 
 def overview(request, model_id):
 
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    current=datetime.datetime.now(pytz.utc)
     name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
@@ -185,7 +185,7 @@ def forecast_test(request):
     return render(request, 'forecast-page.html', context)
 
 def forecast(request, station_id):
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    current=datetime.datetime.now(pytz.utc)
     name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
@@ -337,7 +337,7 @@ main is the function for main page.
 '''
 def abmain(request):
 
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    current=datetime.datetime.now(pytz.utc)
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
     hourString = '{0:02d}'.format(current.hour)
@@ -500,7 +500,7 @@ def idw(request, model_id):
     This piece of data is for the animation on the website.
     '''
 
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    current=datetime.datetime.now(pytz.utc)
     name=current.strftime('%Y%m%d%H')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
@@ -594,7 +594,7 @@ main is the function for main page.
 '''
 def epamain(request):
 
-    current=datetime.datetime.now(pytz.timezone('Asia/Taipei'))
+    current=datetime.datetime.now(pytz.utc)
     name=current.strftime('%Y-%m-%d %I%p')
 
     dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
