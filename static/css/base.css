@@ -3,5 +3,10 @@
 }
 
 #footer-message {
-  margin-bottom: 60px;
+  margin-bottom: 50px;
+  margin-top: 10px;
+}
+
+#footer-divider {
+  margin-top: 30px;
 }

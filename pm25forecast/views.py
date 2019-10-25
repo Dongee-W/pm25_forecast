@@ -15,6 +15,31 @@ from . import config
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+
+'''
+main_test is for the demonstration purpose.
+'''
+def main_test(request):
+    filepath_sachit = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json")
+    filepath_yang = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_1.json")
+    
+    context = {}
+    with open(filepath_sachit) as f:
+        sachit = json.load(f)
+        context.update({"sachit": sachit})
+    with open(filepath_yang) as f:
+        yang = json.load(f)
+        context.update({"yang": yang})
+
+    def format_percentage(number):
+        return "{:.0f}".format(number * 100)
+
+    for model in context:
+        for hour in ["h1", "h2", "h3", "h4", "h5"]:
+            context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
+
+    return render(request, 'main.html', context)
+
 def index(request):
     return render(request, 'index.html')
 
@@ -289,48 +314,6 @@ def forecast(request, station_id):
     cursor.close()
     cnx.close()
 
-'''
-main_test is for the demonstration purpose.
-'''
-def main_test(request):
-    with open(os.path.join(BASE_DIR, "static/main_2018011720.txt")) as f:
-        content = f.readlines()
-        content = [x.strip() for x in content]
-
-        xaxis = content[0]
-        dataStringM_1 = content[1]
-        dataStringY_1 = content[2]
-        dataStringM_2 = content[3]
-        dataStringY_2 = content[4]
-        dataStringM_3 = content[5] 
-        dataStringY_3 = content[6] 
-        dataStringM_4 = content[7] 
-        dataStringY_4 = content[8] 
-        dataStringM_5 = content[9] 
-        dataStringY_5 = content[10]
-        statistics_0_1 = content[11]
-        statistics_0_2 = content[12]
-        statistics_0_3 = content[13]
-        statistics_0_4 = content[14]
-        statistics_0_5 = content[15]
-        statistics_1_1 = content[16]
-        statistics_1_2 = content[17]
-        statistics_1_3 = content[18]
-        statistics_1_4 = content[19]
-        statistics_1_5 =content[20]
-
-    context = {'xaxis': xaxis, 'dataStringM_1': dataStringM_1, 'dataStringY_1': dataStringY_1, 
-    'dataStringM_2': dataStringM_2, 'dataStringY_2': dataStringY_2,
-    'dataStringM_3': dataStringM_3, 'dataStringY_3': dataStringY_3,
-    'dataStringM_4': dataStringM_4, 'dataStringY_4': dataStringY_4,
-    'dataStringM_5': dataStringM_5, 'dataStringY_5': dataStringY_5,
-    'medianErrorM_1': statistics_0_1, 'medianErrorM_2': statistics_0_2,
-    'medianErrorM_3': statistics_0_3, 'medianErrorM_4': statistics_0_4,
-    'medianErrorM_5': statistics_0_5, 'medianErrorY_1': statistics_1_1,
-    'medianErrorY_2': statistics_1_2, 'medianErrorY_3': statistics_1_3,
-    'medianErrorY_4': statistics_1_4, 'medianErrorY_5': statistics_1_5
-    }
-    return render(request, 'main.html', context)
 
 '''
 main is the function for main page.
