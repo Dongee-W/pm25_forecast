@@ -18,7 +18,8 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'^main-test/', views.main_test, name='main_test'),
+    url(r'^summary-test/', views.summary_test, name='summary_test'),
+    url(r'^summary/', views.summary, name='summary'),
     url(r'^admin/', admin.site.urls),
     url(r'^$', views.index, name='index'),
     url(r'^abmain', views.abmain, name='abmain'),
@@ -29,6 +30,6 @@ urlpatterns = [
     url(r'^overview/(?P<model_id>[0-9]+)$', views.overview, name='overview'),
     url(r'^forecast-test/$', views.forecast_test, name='forecast_test'),
     url(r'^forecast/(?P<station_id>[a-zA-Z0-9\.\-\_]+)', views.forecast, name='forecast'),
-    url(r'^main-test/', views.main_test, name='main_test'),
+    #url(r'^main-test/', views.main_test, name='main_test'),
     #url(r'^/', views.main, name='main'),
 ]

@@ -7,6 +7,7 @@ import pytz
 from pathlib import Path
 import json
 import math
+import glob
 
 import pandas as pd
 import numpy as np
@@ -16,10 +17,18 @@ from . import config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
+model = {0: "sachit", 1: "yang"}
+
 '''
-main_test is for the demonstration purpose.
+utility functions
 '''
-def main_test(request):
+def format_percentage(number):
+    return "{:.0f}".format(number * 100)
+
+'''
+summary_test is for the demonstration purpose.
+'''
+def summary_test(request):
     filepath_sachit = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json")
     filepath_yang = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_1.json")
     
@@ -31,14 +40,35 @@ def main_test(request):
         yang = json.load(f)
         context.update({"yang": yang})
 
-    def format_percentage(number):
-        return "{:.0f}".format(number * 100)
+    for model in context:
+        for hour in ["h1", "h2", "h3", "h4", "h5"]:
+            context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
+
+    return render(request, 'main.html', context)
+
+def summary(request):
+    def get_model_summary(model):
+        folder_path = os.path.join(BASE_DIR, "static/data/model_summary_*_" + str(model) + ".json")
+        file_list = glob.glob(folder_path)
+        file_list.sort()
+        most_recent = file_list[-1]
+        return most_recent
+    
+    context = {}
+    global model
+    for i in model.keys():
+        filepath = get_model_summary(i)
+        with open(filepath) as f:
+            data = json.load(f)
+            context.update({model[i]: data})
 
     for model in context:
         for hour in ["h1", "h2", "h3", "h4", "h5"]:
             context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
 
     return render(request, 'main.html', context)
+
+
 
 def index(request):
     return render(request, 'index.html')
