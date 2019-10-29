@@ -7,6 +7,7 @@ import pytz
 from pathlib import Path
 import json
 import math
+import re
 import glob
 
 import pandas as pd
@@ -18,6 +19,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 model = {0: "sachit", 1: "yang"}
+modelName = {0: "Mahajan", 1: "Yang"}
 
 '''
 utility functions
@@ -82,166 +84,35 @@ def overview_test(request):
     
     return render(request, 'overview.html', context)
 
+def overview(request, model_id):
+    global modelName
+    def get_forecast_overview(model, file_type):
+        folder_path = os.path.join(BASE_DIR, "static/data/overview_*_" + str(model) + "." + file_type)
+        file_list = glob.glob(folder_path)
+        file_list.sort()
+        most_recent = file_list[-1]
+
+        # extract file name
+        regular_expresion = 'overview_(.*)_[0-9].' + file_type
+        result = re.search(regular_expresion, most_recent)
+        filename = result.group(0)
+        time = result.group(1)
+        return filename, time
+
+    recent_csv = get_forecast_overview(model_id, "csv")
+    recent_json = get_forecast_overview(model_id, "json")
+
+    context = {'csvFile': "data/" + recent_csv[0], 
+    'jsonFile': "data/" + recent_json[0], 
+    'modelName': modelName[int(model_id)], 
+    'lastUpdate': recent_csv[1], 'modelId': model_id}
+
+    return render(request, 'overview.html', context)
 
 def index(request):
     return render(request, 'index.html')
 
 
-
-def overview(request, model_id):
-
-    current=datetime.datetime.now(pytz.utc)
-    name=current.strftime('%Y-%m-%d %I%p')
-
-    dateString = str(current.year) + '{0:02d}'.format(current.month) + '{0:02d}'.format(current.day)
-    hourString = '{0:02d}'.format(current.hour)
-
-    if (str(model_id) == '0'):
-        modelName = "Mahajan"
-    else:
-        modelName = "Yang"
-
-    # Temporary Use
-    if(model_id == "3"): 
-        withClustering = True
-        modelName = "Mahajan"
-        #model_id = "0"
-    else:
-        withClustering = False
-
-    lastest_file = Path(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"))
-
-    # This is for performance, but this will not get updated once the file is created.
-    if lastest_file.is_file():
-        context = {'csvFile': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 
-                'jsonFile': ("overview_" + dateString + hourString + "_" + model_id + ".json"), 
-                'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'isClustered': withClustering}
-
-        return render(request, 'overview.html', context)
-    else:
-        adjusted = current - datetime.timedelta(hours = 1)
-        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
-
-        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
-        adjustHourString = '{0:02d}'.format(adjusted.hour)
-
-
-        context = {'csvFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 
-        'jsonFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".json"), 'modelName': modelName, 
-        'lastUpdate': adjustName, 'modelId': model_id, 'isClustered': withClustering}
-        return render(request, 'overview.html', context)
-
-    # parameters for testing
-    '''
-    dateString = '20180227'
-    hourString = '16'
-    '''
-
-    # parameters end ...
-    
-    import mysql.connector
-    cnx = mysql.connector.connect(user=config.mysql["user"], password=config.mysql["password"], host='127.0.0.1', database=config.mysql["database"])
-    cursor = cnx.cursor()
-    queryLeft = "select ID, HOUR_AHEAD, PREDICTION from predictions where TARGET_DATE = %s and TARGET_HOUR = %s and MODEL = %s"
-    cursor.execute(queryLeft, (dateString, hourString, str(model_id)))
-
-    leftHalfData = []
-    for (id, hour_ahead, prediction) in cursor:
-        record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
-        leftHalfData.append(record)
-
-    queryRight = "select ID, HOUR_AHEAD, PREDICTION from predictions where DATE = %s and HOUR = %s and MODEL = %s"
-    cursor.execute(queryRight, (dateString, hourString, str(model_id)))
-
-    rightHalfData= []
-    for (id, hour_ahead, prediction) in cursor:
-        record = {"ID": id, "HOUR_AHEAD": hour_ahead, "PREDICTION": float(prediction)}
-        rightHalfData.append(record)
-
-    queryNow = "select ID, READING from readings_new where DATE = %s and HOUR = %s"
-    cursor.execute(queryNow, (dateString, hourString))
-
-    dataNow = []
-    for (id, reading) in cursor:
-        record = {"ID": id, "READING": float(reading)}
-        dataNow.append(record)
-
-    if withClustering == True:
-        model_id = "3"
-
-    if len(leftHalfData) > 0 and len(rightHalfData) > 0 and len(dataNow) > 0:
-        resultSetLeft = pd.DataFrame(leftHalfData)
-        resultSetRight = pd.DataFrame(rightHalfData)
-        resultSetNow = pd.DataFrame(dataNow).set_index('ID')
-        leftHalfTable = resultSetLeft.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
-        leftHalfTable.columns = ["now-" + str(col) + "h" for col in leftHalfTable.columns]
-        rightHalfTable = resultSetRight.pivot_table(values='PREDICTION',index=['ID'], columns=['HOUR_AHEAD'])
-        rightHalfTable.columns = ["now+" + str(col) + "h" for col in rightHalfTable.columns]
-        fullTable = pd.merge(leftHalfTable, rightHalfTable, how='outer', left_index=True, right_index=True)
-        resultSetNow.columns = ['now']
-        perfectTable = pd.merge(fullTable, resultSetNow, how='left', left_index=True, right_index=True)
-        perfectTable['device_id'] = perfectTable.index
-        allColumns = ["device_id", "now-5h", "now-4h", "now-3h", "now-2h", "now-1h", "now", "now+1h", "now+2h", "now+3h", "now+4h", "now+5h"]
-        for col in allColumns:
-            if col not in perfectTable:
-                perfectTable[col] = np.nan
-        perfectTable = perfectTable[["device_id", "now-5h", "now-4h", "now-3h", "now-2h", "now-1h", "now", "now+1h", "now+2h", "now+3h", "now+4h", "now+5h"]]
-
-        if withClustering == True:
-            cluster = pd.read_csv("/home/pm25_forecast/complete.csv")
-            ultimate = pd.merge(perfectTable, cluster, how="inner", left_on="device_id", right_on="ID").drop("ID", axis = 1)
-            ultimate.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-            sourceString = "pm25-forecast-yang by IIS-NRL"
-            versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
-            numRecords = len(ultimate)
-            dateStringJson = current.strftime('%Y-%m-%d')
-            timeString = hourString + ":00"
-            feeds = ultimate.to_dict(orient="records")
-        else:
-            perfectTable.to_csv(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".csv"), index=False)
-            sourceString = "pm25-forecast-yang by IIS-NRL"
-            versionString = current.strftime('%Y-%m-%dT%H:%M:%SZ')
-            numRecords = len(perfectTable)
-            dateStringJson = current.strftime('%Y-%m-%d')
-            timeString = hourString + ":00"
-            feeds = perfectTable.to_dict(orient="records")
-        
-        '''
-        Change nan to None
-        '''
-        
-        def replaceNan(dict):
-            dictionary = {key: value for key, value in dict.items()}
-            for key, value in dictionary.items():
-                if key != "device_id" and key != "Cluster":
-                    if math.isnan(value):
-                        dictionary[key] = None
-            return dictionary
-
-        feedsNew = [replaceNan(x) for x in feeds]
-
-        jsonString = json.dumps({"source": sourceString, "version": versionString, "num_of_records": numRecords, "date": dateString, "time": timeString, "feed": feedsNew})
-
-        with open(os.path.join(BASE_DIR, "static/overview_" + dateString + hourString + "_" + model_id + ".json"), "w") as jsonFile:
-            jsonFile.write(jsonString)
-
-        context = {'csvFile': ("overview_" + dateString + hourString + "_" + model_id + ".csv"), 'jsonFile': ("overview_" + dateString + hourString + "_" + model_id + ".json"), 'modelName': modelName, 'lastUpdate': name, 'modelId': model_id, 'isClustered': withClustering}
-        cursor.close()
-        cnx.close()
-        return render(request, 'overview.html', context)
-    else:
-        
-        adjusted = current - datetime.timedelta(hours = 1)
-        adjustName=adjusted.strftime('%Y-%m-%d %I%p')
-
-        adjustDateString = str(adjusted.year) + '{0:02d}'.format(adjusted.month) + '{0:02d}'.format(adjusted.day)
-        adjustHourString = '{0:02d}'.format(adjusted.hour)
-
-
-        context = {'csvFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".csv"), 'jsonFile': ("overview_" + adjustDateString + adjustHourString + "_" + model_id + ".json"), 'modelName': modelName, 'lastUpdate': adjustName, 'modelId': model_id, 'isClustered': withClustering}
-
-        return render(request, 'overview.html', context)
-    
 
 '''
 forecast_test is for the demonstration purpose.
