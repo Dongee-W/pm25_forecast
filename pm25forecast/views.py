@@ -26,7 +26,7 @@ def format_percentage(number):
     return "{:.0f}".format(number * 100)
 
 '''
-summary_test is for the demonstration purpose.
+summary page test
 '''
 def summary_test(request):
     filepath_sachit = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json")
@@ -46,6 +46,9 @@ def summary_test(request):
 
     return render(request, 'main.html', context)
 
+'''
+summary page
+'''
 def summary(request):
     def get_model_summary(model):
         folder_path = os.path.join(BASE_DIR, "static/data/model_summary_*_" + str(model) + ".json")
@@ -68,14 +71,22 @@ def summary(request):
 
     return render(request, 'main.html', context)
 
+'''
+overview page test
+'''
+def overview_test(request):
+    context = {'csvFile': "data/overview_2019-10-08T10_0.csv", 
+    'jsonFile': "data/overview_2019-10-08T10_0.json", 
+    'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM", 
+    'modelId': 1, "isClustered": False}
+    
+    return render(request, 'overview.html', context)
 
 
 def index(request):
     return render(request, 'index.html')
 
-def overview_test(request):
-    context = {'csvFile': "overview_2018011719_cluster.csv", 'modelName': "Mahajan", 'lastUpdate': "2018-01-18 09AM", 'modelId': 1, "isClustered": "true"}
-    return render(request, 'overview.html', context)
+
 
 def overview(request, model_id):
 
