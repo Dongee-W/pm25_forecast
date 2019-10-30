@@ -18,7 +18,7 @@ from . import config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-model = {0: "sachit", 1: "yang"}
+modelCode = {0: "sachit", 1: "yang"}
 modelName = {0: "Mahajan", 1: "Yang"}
 
 '''
@@ -46,7 +46,7 @@ def summary_test(request):
         for hour in ["h1", "h2", "h3", "h4", "h5"]:
             context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
 
-    return render(request, 'main.html', context)
+    return render(request, 'summary.html', context)
 
 '''
 summary page
@@ -60,18 +60,18 @@ def summary(request):
         return most_recent
     
     context = {}
-    global model
-    for i in model.keys():
+    global modelCode
+    for i in modelCode.keys():
         filepath = get_model_summary(i)
         with open(filepath) as f:
             data = json.load(f)
-            context.update({model[i]: data})
+            context.update({modelCode[i]: data})
 
     for model in context:
         for hour in ["h1", "h2", "h3", "h4", "h5"]:
             context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
 
-    return render(request, 'main.html', context)
+    return render(request, 'summary.html', context)
 
 '''
 overview page test
