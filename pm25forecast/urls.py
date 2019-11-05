@@ -18,7 +18,7 @@ from django.contrib import admin
 from . import views
 
 urlpatterns = [
-    url(r'^$', views.summary_test, name='index'),
+    url(r'^$', views.summary, name='index'),
     url(r'^summary-test/', views.summary_test, name='summary_test'),
     url(r'^summary/', views.summary, name='summary'),
     url(r'^overview-test/$', views.overview_test, name='overview_test'),
