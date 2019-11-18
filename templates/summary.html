@@ -32,92 +32,51 @@
       </tr>
     </thead>
     <tbody>
+        {% for model in data %}
       <tr>
         <td class="collapsing">
-            <button class="ui primary button" onclick="location.href='/overview/0'">
+            <button class="ui primary button" onclick="location.href='/overview/{{model.code}}'">
                 Overview
             </button>
         </td>
-        <td>Mahajan Model</td>
+        <td>{{model.name}}</td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
-                {{sachit.h1.median_relative_error}}%
+                {{model.h1.median_relative_error}}
                 </div>
             </div>
         </td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
-                {{sachit.h2.median_relative_error}}%
+                {{model.h2.median_relative_error}}
                 </div>
             </div>
         </td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
-                {{sachit.h3.median_relative_error}}%
+                {{model.h3.median_relative_error}}
                 </div>
             </div>
         </td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
-                {{sachit.h4.median_relative_error}}%
+                {{model.h4.median_relative_error}}
                 </div>
             </div>
         </td>
         <td>
             <div class="ui tiny statistic">
                 <div class="value">
-                {{sachit.h5.median_relative_error}}%
+                {{model.h5.median_relative_error}}
                 </div>
             </div>
         </td>
       </tr>
-      <tr>
-        <td class="collapsing">
-            <button class="ui primary button" onclick="location.href='/overview/1'">
-                Overview
-            </button>
-        </td>
-        <td>Yang Model</td>
-        <td>
-            <div class="ui tiny statistic">
-                <div class="value">
-                {{yang.h1.median_relative_error}}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="ui tiny statistic">
-                <div class="value">
-                {{yang.h2.median_relative_error}}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="ui tiny statistic">
-                <div class="value">
-                {{yang.h3.median_relative_error}}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="ui  tiny statistic">
-                <div class="value">
-                {{yang.h4.median_relative_error}}%
-                </div>
-            </div>
-        </td>
-        <td>
-            <div class="ui tiny statistic">
-                <div class="value">
-                {{yang.h5.median_relative_error}}%
-                </div>
-            </div>
-        </td>
-      </tr>
+      {% endfor %}
       <!--
       <tr>
         <td class="collapsing">
@@ -176,6 +135,7 @@
                     <div class="column">
                         <ol class="ui list">
                             <li value="*">Despite lower accuracy, Yang Model runs about 6,000 times faster than Mahajan Model at current state.</li>
+                            <li value="**">NCU-WASN currently supports one-hour forecasts.</li>
                         </ol>
                     </div>
                 </div>
@@ -240,86 +200,93 @@
 
 
         var oneY = {
-            x: {{yang.h1.xaxis}},
-            y: {{yang.h1.yaxis}},
+            x: {{data.1.h1.xaxis}},
+            y: {{data.1.h1.yaxis}},
             name: 'Yang',
             type: 'scatter',
             line: {color: 'rgb(255, 214, 51)'}
         };
 
         var oneM = {
-            x: {{sachit.h1.xaxis}},
-            y: {{sachit.h1.yaxis}},
+            x: {{data.0.h1.xaxis}},
+            y: {{data.0.h1.yaxis}},
             name: 'Mahajan',
             type: 'scatter',
             line: {color: 'rgb(51, 153, 102)'}
         };
+        var oneN = {
+            x: {{data.2.h1.xaxis}},
+            y: {{data.2.h1.yaxis}},
+            name: 'NCU-WASN',
+            type: 'scatter',
+            line: {color: 'rgb(222, 97, 2)'}
+        };
 
         var twoY = {
-            x: {{yang.h2.xaxis}},
-            y: {{yang.h2.yaxis}},
+            x: {{data.1.h2.xaxis}},
+            y: {{data.1.h2.yaxis}},
             name: 'Yang',
             type: 'scatter',
             line: {color: 'rgb(255, 214, 51)'}
         };
 
         var twoM = {
-            x: {{sachit.h2.xaxis}},
-            y: {{sachit.h2.yaxis}},
+            x: {{data.0.h2.xaxis}},
+            y: {{data.0.h2.yaxis}},
             name: 'Mahajan',
             type: 'scatter',
             line: {color: 'rgb(51, 153, 102)'}
         };
 
         var threeY = {
-            x: {{yang.h3.xaxis}},
-            y: {{yang.h3.yaxis}},
+            x: {{data.1.h3.xaxis}},
+            y: {{data.1.h3.yaxis}},
             name: 'Yang',
             type: 'scatter',
             line: {color: 'rgb(255, 214, 51)'}
         };
 
         var threeM = {
-            x: {{sachit.h3.xaxis}},
-            y: {{sachit.h3.yaxis}},
+            x: {{data.0.h3.xaxis}},
+            y: {{data.0.h3.yaxis}},
             name: 'Mahajan',
             type: 'scatter',
             line: {color: 'rgb(51, 153, 102)'}
         };
 
         var fourY = {
-            x: {{yang.h4.xaxis}},
-            y: {{yang.h4.yaxis}},
+            x: {{data.1.h4.xaxis}},
+            y: {{data.1.h4.yaxis}},
             name: 'Yang',
             type: 'scatter',
             line: {color: 'rgb(255, 214, 51)'}
         };
 
         var fourM = {
-            x: {{sachit.h4.xaxis}},
-            y: {{sachit.h4.yaxis}},
+            x: {{data.0.h4.xaxis}},
+            y: {{data.0.h4.yaxis}},
             name: 'Mahajan',
             type: 'scatter',
             line: {color: 'rgb(51, 153, 102)'}
         };
 
         var fiveY = {
-            x: {{yang.h5.xaxis}},
-            y: {{yang.h5.yaxis}},
+            x: {{data.1.h5.xaxis}},
+            y: {{data.1.h5.yaxis}},
             name: 'Yang',
             type: 'scatter',
             line: {color: 'rgb(255, 214, 51)'}
         };
 
         var fiveM = {
-            x: {{sachit.h5.xaxis}},
-            y: {{sachit.h5.yaxis}},
+            x: {{data.0.h5.xaxis}},
+            y: {{data.0.h5.yaxis}},
             name: 'Mahajan',
             type: 'scatter',
             line: {color: 'rgb(51, 153, 102)'}
         };
 
-        var CDF_One = [oneY, oneM];
+        var CDF_One = [oneY, oneM, oneN];
         var CDF_Two = [twoY, twoM];
         var CDF_Three = [threeY, threeM];
         var CDF_Four = [fourY, fourM];

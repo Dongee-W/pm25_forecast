@@ -18,33 +18,42 @@ from . import config
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-modelCode = {0: "sachit", 1: "yang"}
-modelName = {0: "Mahajan", 1: "Yang"}
+modelCode = {0: "sachit", 1: "yang", 2:"ncu"}
+modelName = {0: "Mahajan Model", 1: "Yang Model", 2: "NCU-WASN Model"}
 
 '''
 utility functions
 '''
 def format_percentage(number):
-    return "{:.0f}".format(number * 100)
+    return "{:.0f}".format(number * 100) + "%"
 
 '''
 summary page test
 '''
 def summary_test(request):
-    filepath_sachit = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json")
-    filepath_yang = os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_1.json")
+    file_paths = [os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json"),
+    os.path.join(BASE_DIR, "static/data/model_summary_2019-10-08T09_0.json"),
+    os.path.join(BASE_DIR, "static/data/model_summary_2019-11-18T10_2.json")]
     
-    context = {}
-    with open(filepath_sachit) as f:
-        sachit = json.load(f)
-        context.update({"sachit": sachit})
-    with open(filepath_yang) as f:
-        yang = json.load(f)
-        context.update({"yang": yang})
+    context = {"data":[]}
 
-    for model in context:
+    model_name = ["Mahajan Model", "Yang Model", "NCU-WASN Model"]
+    code = [0, 1, 2]
+
+    for i in range(0, len(file_paths)):
+        with open(file_paths[i]) as f:
+            js = json.load(f)
+            js.update({"name": modelName[i]})
+            js.update({"code": code[i]})
+            context["data"].append(js)
+
+    for model in context["data"]:
         for hour in ["h1", "h2", "h3", "h4", "h5"]:
-            context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
+            try:
+                model[hour]["median_relative_error"] = format_percentage(model[hour]["median_relative_error"])
+            except:
+                model[hour] = {}
+                model[hour]["median_relative_error"] = "N/A"
 
     return render(request, 'summary.html', context)
 
@@ -59,17 +68,23 @@ def summary(request):
         most_recent = file_list[-1]
         return most_recent
     
-    context = {}
+    context = {"data":[]}
     global modelCode
     for i in modelCode.keys():
         filepath = get_model_summary(i)
         with open(filepath) as f:
-            data = json.load(f)
-            context.update({modelCode[i]: data})
+            js = json.load(f)
+            js.update({"name": modelName[i]})
+            js.update({"code": i})
+            context["data"].append(js)
 
-    for model in context:
+    for model in context["data"]:
         for hour in ["h1", "h2", "h3", "h4", "h5"]:
-            context[model][hour]["median_relative_error"] = format_percentage(context[model][hour]["median_relative_error"])
+            try:
+                model[hour]["median_relative_error"] = format_percentage(model[hour]["median_relative_error"])
+            except:
+                model[hour] = {}
+                model[hour]["median_relative_error"] = "N/A"
 
     return render(request, 'summary.html', context)
 
