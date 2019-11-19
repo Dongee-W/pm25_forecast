@@ -3,37 +3,47 @@
 
 <html lang="en">
     <head>
-    <meta charset="utf-8">
+        <!-- Global site tag (gtag.js) - Google Analytics -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=UA-152868638-1"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
 
-    <title>{% block title %}Base{% endblock %}</title>
-    <meta name="description" content="PM2.5 Forecast">
-    <meta name="keywords" content="PM2.5, Forecast, Timeseries, Machine Learning">
-    <meta name="author" content="dongee-w">
-    <link rel="shortcut icon" type="image/png" href="{% static "logo.png" %}"/>
-    <link rel="stylesheet" href="{% static "css/base.css" %}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.css">
-    
-    
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.2/d3.js"></script>
-    <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>-->
-    
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
-    <script
-    src="https://code.jquery.com/jquery-3.2.1.min.js"
-    integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
-    crossorigin="anonymous"></script>
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+        gtag('config', 'UA-152868638-1');
+        </script>
 
-    {% block local_import %}{% endblock %}
-    
-    
-    
+        <meta charset="utf-8">
 
-    <!--[if lt IE 9]>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
-    <![endif]-->
+        <title>{% block title %}Base{% endblock %}</title>
+        <meta name="description" content="PM2.5 Forecast">
+        <meta name="keywords" content="PM2.5, Forecast, Timeseries, Machine Learning">
+        <meta name="author" content="dongee-w">
+        <link rel="shortcut icon" type="image/png" href="{% static "logo.png" %}"/>
+        <link rel="stylesheet" href="{% static "css/base.css" %}">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.css">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/nvd3/1.8.6/nv.d3.min.css">
+        
+        
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.2/d3.js"></script>
+        <!--<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.js"></script>-->
+        
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.19.1/moment.min.js"></script>
+        <script
+        src="https://code.jquery.com/jquery-3.2.1.min.js"
+        integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+        crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/semantic-ui/2.4.1/semantic.js"></script>
+        <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+        {% block local_import %}{% endblock %}
+        
+        
+        
+
+        <!--[if lt IE 9]>
+            <script src="https://cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv.js"></script>
+        <![endif]-->
     </head>
 
     <body>
